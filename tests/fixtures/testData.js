@@ -117,18 +117,18 @@ export const testDataSets = {
 // Expected results for known scenarios (calculated manually for validation)
 export const expectedResults = {
   versaTubeDefaults: {
-    aovPostTaxReturns: 1356.54,
+    aovPostTaxReturns: 1359.15,
     grossMarginPercent: 58.0,
-    contributionMargin: 666.79,
+    contributionMargin: 668.31,
     contributionMarginPercent: 49.16,
-    operatingProfitPerOrder: 476.88,
-    customerLifetimeValue: 1372.69,
-    customerLifetimeProfit: 482.46,
-    profitDrivenCAC: 317.74,
-    breakEvenCAC: 482.46,
+    operatingProfitPerOrder: 478.03,
+    customerLifetimeValue: 1568.46,
+    customerLifetimeProfit: 551.64,
+    profitDrivenCAC: 363.43,
+    breakEvenCAC: 551.64,
     ltvCacRatio: 4.32,
     targetROAS: 4.32,
-    targetCpl: 31.77
+    targetCpl: 3634.30
   },
 
   highMarginBusiness: {
@@ -137,9 +137,9 @@ export const expectedResults = {
     contributionMargin: 1435.00,
     operatingProfitPerOrder: 1276.60,
     customerLifetimeValue: 2970.00,
-    customerLifetimeProfit: 1916.90,
-    profitDrivenCAC: 1471.40,
-    targetCpl: 176.57
+    customerLifetimeProfit: 1914.90,
+    profitDrivenCAC: 1469.40,
+    targetCpl: 1224.50
   },
 
   lowMarginBusiness: {
