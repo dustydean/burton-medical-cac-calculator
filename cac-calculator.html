@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Strategic CAC Calculator</title>
+	<style>
+		:root {
+			/* Light theme variables */
+			--bg-primary: #f8f9fa;
+			--bg-secondary: #ffffff;
+			--bg-tertiary: #e9f7ef;
+			--bg-header: #3498db;
+			--bg-card: #ffffff;
+			--text-primary: #333333;
+			--text-secondary: #555555;
+			--text-light: #7f8c8d;
+			--accent-primary: #3498db;
+			--accent-secondary: #2ecc71;
+			--accent-tertiary: #e74c3c;
+			--accent-quaternary: #9b59b6;
+			--border-color: #e0e0e0;
+			--shadow-color: rgba(0, 0, 0, 0.1);
+			--key-metric-bg: #e8f8f5;
+			--key-metric-color: #2ecc71;
+			--notification-bg: #2ecc71;
+			--notification-text: #ffffff;
+			--modal-bg: rgba(0, 0, 0, 0.7);
+			--popup-bg: #ffffff;
+			--popup-header: #f2f2f2;
+		}
+
+		[data-theme="dark"] {
+			/* Dark theme variables */
+			--bg-primary: #1a1a1a;
+			--bg-secondary: #2d2d2d;
+			--bg-tertiary: #2c3e50;
+			--bg-header: #2c3e50;
+			--bg-card: #2d2d2d;
+			--text-primary: #f0f0f0;
+			--text-secondary: #cccccc;
+			--text-light: #a0a0a0;
+			--accent-primary: #3498db;
+			--accent-secondary: #2ecc71;
+			--accent-tertiary: #e74c3c;
+			--accent-quaternary: #9b59b6;
+			--border-color: #444444;
+			--shadow-color: rgba(0, 0, 0, 0.3);
+			--key-metric-bg: #2c3e50;
+			--key-metric-color: #2ecc71;
+			--notification-bg: #2ecc71;
+			--notification-text: #ffffff;
+			--modal-bg: rgba(0, 0, 0, 0.8);
+			--popup-bg: #2d2d2d;
+			--popup-header: #1a1a1a;
+		}
+
+		* {
+			box-sizing: border-box;
+			transition: background-color 0.3s, color 0.3s;
+		}
+
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			line-height: 1.6;
+			margin: 0;
+			padding: 0;
+			background-color: var(--bg-primary);
+			color: var(--text-primary);
+		}
+
+		.container {
+			max-width: 1400px;
+			margin: 0 auto;
+			padding: 0;
+			overflow-x: hidden;
+			display: flex;
+			flex-direction: column;
+			min-height: 100vh;
+		}
+
+		/* Header Styles */
+		.header {
+			background-color: var(--bg-header);
+			color: white;
+			padding: 15px 20px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			position: sticky;
+			top: 0;
+			z-index: 1000;
+			box-shadow: 0 2px 10px var(--shadow-color);
+		}
+
+		.header h1 {
+			margin: 0;
+			font-size: 1.5rem;
+			font-weight: 600;
+		}
+
+		.header-actions {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+		}
+
+		/* Top Panel Styles */
+		.top-panel {
+			width: 100%;
+			background-color: var(--bg-secondary);
+			border-bottom: 1px solid var(--border-color);
+			transition: transform 0.3s ease, max-height 0.3s ease;
+			overflow: hidden;
+			box-shadow: 0 2px 10px var(--shadow-color);
+			z-index: 900;
+			position: relative;
+			max-height: 1200px;
+		}
+
+		.top-panel.collapsed {
+			max-height: 0;
+			transform: translateY(-100%);
+			border-bottom: none;
+		}
+		
+		/* Tabs styling */
+		.tabs {
+			display: flex;
+			background-color: var(--bg-secondary);
+			border-bottom: 1px solid var(--border-color);
+		}
+
+		.tab {
+			padding: 12px 16px;
+			cursor: pointer;
+			font-weight: 500;
+			color: var(--text-secondary);
+			border-bottom: 3px solid transparent;
+		}
+
+		.tab.active {
+			color: var(--accent-primary);
+			border-bottom: 3px solid var(--accent-primary);
+		}
+
+		.tab-content {
+			display: none;
+			padding: 20px;
+			background-color: var(--bg-secondary);
+		}
+
+		.tab-content.active {
+			display: block;
+			animation: fadeIn 0.3s ease;
+		}
+
+		@keyframes fadeIn {
+			from { opacity: 0; }
+			to { opacity: 1; }
+		}
+
+		/* Input styling */
+		.input-group {
+			margin-bottom: 20px;
+		}
+
+		label {
+			display: block;
+			margin-bottom: 5px;
+			font-weight: 500;
+			color: var(--text-primary);
+		}
+
+		.description {
+			font-size: 0.85em;
+			color: var(--text-light);
+			margin-bottom: 8px;
+		}
+
+		input[type="number"] {
+			width: 100%;
+			padding: 10px;
+			border: 1px solid var(--border-color);
+			border-radius: 4px;
+			font-size: 0.95em;
+			background-color: var(--bg-secondary);
+			color: var(--text-primary);
+			transition: border 0.3s;
+		}
+
+		input[type="number"]:focus {
+			border-color: var(--accent-primary);
+			outline: none;
+			box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+		}
+
+		/* Button styling */
+		.button-container {
+			padding: 15px 20px;
+			background-color: var(--bg-secondary);
+			border-top: 1px solid var(--border-color);
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			justify-content: center;
+		}
+
+		.button {
+			padding: 10px 16px;
+			font-size: 0.9em;
+			cursor: pointer;
+			border: none;
+			border-radius: 4px;
+			color: white;
+			font-weight: 500;
+			display: flex;
+			align-items: center;
+			gap: 5px;
+			transition: background-color 0.3s, transform 0.1s;
+		}
+
+		.button:hover {
+			opacity: 0.9;
+			transform: translateY(-1px);
+		}
+
+		.button:active {
+			transform: translateY(1px);
+		}
+
+		.button.calculate {
+			background-color: var(--accent-secondary);
+		}
+
+		.button.reset {
+			background-color: var(--accent-tertiary);
+		}
+
+		.button.save {
+			background-color: var(--accent-primary);
+		}
+
+		.button.import {
+			background-color: var(--accent-quaternary);
+		}
+
+		.button.presentation-mode {
+			background-color: #f39c12;
+		}
+		
+		.button.recalculate {
+			background-color: var(--accent-quaternary);
+			padding: 8px 12px;
+			font-size: 0.85em;
+		}
+
+		/* Results area */
+		.results-container {
+			flex: 1;
+			padding: 20px;
+			background-color: var(--bg-primary);
+			overflow-y: auto;
+		}
+
+		.results-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+
+		.results-title {
+			font-size: 1.4em;
+			margin: 0;
+			font-weight: 600;
+			color: var(--text-primary);
+		}
+
+		/* Metrics Groups */
+		.metrics-group {
+			margin-bottom: 40px;
+		}
+
+		.group-title {
+			font-size: 1.2em;
+			font-weight: 600;
+			color: var(--text-primary);
+			margin-bottom: 20px;
+			padding-bottom: 8px;
+			border-bottom: 2px solid var(--border-color);
+		}
+
+		.results-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+			gap: 20px;
+		}
+
+		/* CPL Model Section within groups */
+		.cpl-model-section {
+			background-color: var(--bg-secondary);
+			border-radius: 10px;
+			padding: 20px;
+			box-shadow: 0 3px 10px var(--shadow-color);
+			border-top: 3px solid var(--accent-quaternary);
+		}
+
+		.cpl-model-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			gap: 20px;
+			align-items: end;
+		}
+
+		.result-card {
+			background-color: var(--bg-card);
+			border-radius: 10px;
+			padding: 20px;
+			box-shadow: 0 3px 10px var(--shadow-color);
+			transition: transform 0.2s, box-shadow 0.2s;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.result-card:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 5px 15px var(--shadow-color);
+		}
+
+		.result-card.key-metric {
+			border-left: 5px solid var(--key-metric-color);
+		}
+		
+		.metrics-legend {
+			display: flex;
+			align-items: center;
+			margin-bottom: 15px;
+			font-size: 0.9em;
+			color: var(--text-secondary);
+		}
+		
+		.legend-key {
+			display: inline-block;
+			width: 15px;
+			height: 15px;
+			border-left: 5px solid var(--key-metric-color);
+			margin-right: 8px;
+		}
+		
+		.metric-label {
+			font-size: 1.1em;
+			font-weight: 500;
+			color: var(--text-primary);
+			margin-bottom: 10px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.metric-value {
+			font-size: 1.7em;
+			font-weight: 600;
+			margin-bottom: 15px;
+			color: var(--text-primary);
+		}
+
+		.key-metric .metric-value {
+			color: var(--key-metric-color);
+		}
+		
+		.metric-explanation {
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			line-height: 1.5;
+		}
+
+		.debug-info {
+			margin-top: 10px;
+			font-size: 0.75em;
+			color: var(--text-light);
+			font-style: italic;
+			opacity: 0.7;
+		}
+
+		/* CPL Modeling Card */
+		.cpl-model-card {
+			background-color: var(--bg-secondary);
+			border-radius: 10px;
+			padding: 20px;
+			box-shadow: 0 3px 10px var(--shadow-color);
+			margin-top: 30px;
+			border-top: 5px solid var(--accent-quaternary);
+		}
+
+		.cpl-model-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			gap: 20px;
+			align-items: end;
+		}
+		
+		.cpl-output-value {
+			font-size: 2.2em;
+			font-weight: 700;
+			color: var(--accent-quaternary);
+		}
+
+		.readonly-input {
+			background-color: var(--bg-primary);
+			padding: 10px;
+			border-radius: 4px;
+			font-weight: 500;
+			border: 1px solid var(--border-color);
+		}
+		
+		/* Dark mode toggle */
+		.theme-toggle {
+			background: none;
+			border: none;
+			color: white;
+			cursor: pointer;
+			font-size: 1.2em;
+			padding: 5px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		/* Calculation Details Styling */
+		.calc-toggle {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			background-color: var(--accent-primary);
+			color: white;
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			font-size: 0.8em;
+			margin-left: 8px;
+			cursor: pointer;
+			transition: all 0.2s;
+			border: none;
+			font-weight: bold;
+		}
+
+		.calc-toggle:hover {
+			background-color: var(--accent-secondary);
+			transform: scale(1.1);
+		}
+
+		.calc-toggle.expanded {
+			background-color: var(--accent-secondary);
+			transform: rotate(45deg);
+		}
+
+		.calc-details {
+			max-height: 0;
+			overflow: hidden;
+			transition: max-height 0.3s ease, padding 0.3s ease;
+			background-color: var(--bg-primary);
+			border-radius: 5px;
+			margin-top: 0;
+		}
+
+		.calc-details.expanded {
+			max-height: 300px;
+			padding: 15px;
+			margin-top: 10px;
+			border: 1px solid var(--border-color);
+		}
+
+		.calc-formula {
+			font-family: 'Courier New', monospace;
+			background-color: var(--bg-secondary);
+			padding: 8px;
+			border-radius: 3px;
+			margin-bottom: 10px;
+			font-size: 0.85em;
+			color: var(--accent-primary);
+			border-left: 3px solid var(--accent-primary);
+		}
+
+		.calc-step {
+			margin-bottom: 8px;
+			font-size: 0.9em;
+			color: var(--text-secondary);
+		}
+
+		.calc-step strong {
+			color: var(--text-primary);
+		}
+
+		.calc-result {
+			background-color: var(--accent-secondary);
+			color: white;
+			padding: 8px;
+			border-radius: 3px;
+			font-weight: bold;
+			text-align: center;
+			margin-top: 10px;
+		}
+
+		/* Presentation mode */
+		.presentation-mode-active .top-panel {
+			max-height: 0;
+			transform: translateY(-100%);
+			border-bottom: none;
+		}
+
+		.presentation-mode-active .result-card,
+		.presentation-mode-active .cpl-model-card {
+			font-size: 1.1em;
+		}
+
+		.presentation-mode-active .results-title {
+			font-size: 1.6em;
+		}
+
+		/* Floating calculate button for presentation mode */
+		.floating-calculate {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			width: 60px;
+			height: 60px;
+			border-radius: 50%;
+			background-color: var(--accent-secondary);
+			color: white;
+			display: none;
+			align-items: center;
+			justify-content: center;
+			font-size: 1.2em;
+			box-shadow: 0 3px 10px var(--shadow-color);
+			cursor: pointer;
+			z-index: 1000;
+			transition: all 0.2s;
+		}
+
+		.floating-calculate:hover {
+			transform: scale(1.1);
+		}
+
+		.presentation-mode-active .floating-calculate {
+			display: flex;
+		}
+
+		/* Notification */
+		.notification {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			background-color: var(--notification-bg);
+			color: var(--notification-text);
+			padding: 15px 20px;
+			border-radius: 5px;
+			box-shadow: 0 3px 10px var(--shadow-color);
+			z-index: 1001;
+			display: none;
+			font-weight: 500;
+		}
+
+		/* Waterfall Chart Styles */
+		.waterfall-chart-container {
+			background-color: var(--bg-secondary);
+			border-radius: 10px;
+			padding: 25px;
+			margin: 30px 0;
+			box-shadow: 0 3px 10px var(--shadow-color);
+			border-top: 3px solid var(--accent-primary);
+		}
+
+		.waterfall-title {
+			font-size: 1.3em;
+			font-weight: 600;
+			color: var(--text-primary);
+			margin-bottom: 20px;
+			text-align: center;
+		}
+
+		.waterfall-chart {
+			display: flex;
+			align-items: flex-end;
+			justify-content: space-around;
+			height: 300px;
+			position: relative;
+			padding: 20px 10px;
+			margin: 20px 0;
+		}
+
+		.waterfall-bar {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			position: relative;
+			min-width: 80px;
+			max-width: 120px;
+			flex: 1;
+		}
+
+		.bar-value {
+			background-color: var(--bg-primary);
+			color: var(--text-primary);
+			padding: 8px 12px;
+			border-radius: 4px;
+			font-weight: 600;
+			font-size: 0.9em;
+			margin-bottom: 10px;
+			border: 1px solid var(--border-color);
+			text-align: center;
+			min-width: 100px;
+			box-shadow: 0 2px 5px var(--shadow-color);
+		}
+
+		.bar-visual {
+			width: 60px;
+			border-radius: 4px 4px 0 0;
+			position: relative;
+			transition: height 0.8s ease-in-out;
+			box-shadow: 0 2px 8px var(--shadow-color);
+		}
+
+		.bar-label {
+			margin-top: 15px;
+			font-size: 0.85em;
+			font-weight: 500;
+			color: var(--text-secondary);
+			text-align: center;
+			line-height: 1.3;
+		}
+
+		/* Bar color classes */
+		.bar-aov .bar-visual { background-color: #2c3e50; }
+		.bar-cogs .bar-visual { background-color: #e67e22; }
+		.bar-fulfillment .bar-visual { background-color: #f39c12; }
+		.bar-ga .bar-visual { background-color: #9b59b6; }
+		.bar-cac .bar-visual { background-color: #e74c3c; }
+		.bar-net .bar-visual { background-color: #27ae60; }
+
+		/* Dark theme bar adjustments */
+		[data-theme="dark"] .bar-aov .bar-visual { background-color: #34495e; }
+		[data-theme="dark"] .bar-cogs .bar-visual { background-color: #d35400; }
+		[data-theme="dark"] .bar-fulfillment .bar-visual { background-color: #e67e22; }
+		[data-theme="dark"] .bar-ga .bar-visual { background-color: #8e44ad; }
+		[data-theme="dark"] .bar-cac .bar-visual { background-color: #c0392b; }
+		[data-theme="dark"] .bar-net .bar-visual { background-color: #2ecc71; }
+
+		/* Negative margin styling */
+		.negative-margin {
+			color: #e74c3c !important;
+		}
+
+		[data-theme="dark"] .negative-margin {
+			color: #ff6b6b !important;
+		}
+
+		/* Connector lines */
+		.waterfall-chart::before {
+			content: '';
+			position: absolute;
+			bottom: 20px;
+			left: 10px;
+			right: 10px;
+			height: 1px;
+			background-color: var(--border-color);
+			z-index: 1;
+		}
+
+		.waterfall-summary {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			gap: 15px;
+			margin-top: 25px;
+			padding-top: 20px;
+			border-top: 1px solid var(--border-color);
+		}
+
+		.summary-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 10px 15px;
+			background-color: var(--bg-primary);
+			border-radius: 5px;
+			border-left: 4px solid var(--accent-primary);
+		}
+
+		.summary-label {
+			font-weight: 500;
+			color: var(--text-secondary);
+		}
+
+		.summary-value {
+			font-weight: 600;
+			color: var(--text-primary);
+		}
+
+		/* Responsive adjustments */
+		@media (max-width: 1000px) {
+			.results-grid {
+				grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+			}
+			
+			.waterfall-chart {
+				height: 280px;
+				padding: 15px 5px;
+			}
+			
+			.bar-visual {
+				width: 45px;
+			}
+			
+			.bar-value {
+				font-size: 0.75em;
+				padding: 5px 6px;
+				min-width: 70px;
+			}
+		}
+
+		@media (max-width: 768px) {
+			.results-grid,
+			.cpl-model-grid {
+				grid-template-columns: 1fr;
+			}
+			
+			.waterfall-chart {
+				height: 200px;
+				flex-direction: column;
+				align-items: stretch;
+				height: auto;
+				gap: 15px;
+			}
+			
+			.waterfall-bar {
+				flex-direction: row;
+				align-items: center;
+				min-width: auto;
+				max-width: none;
+			}
+			
+			.bar-visual {
+				width: 30px;
+				height: 30px !important;
+				border-radius: 4px;
+				margin: 0 15px;
+			}
+			
+			.bar-value {
+				order: 3;
+				margin: 0;
+				min-width: 100px;
+			}
+			
+			.bar-label {
+				order: 1;
+				margin: 0;
+				flex: 1;
+				text-align: left;
+			}
+		}
+
+		/* Form layout grid for larger screens */
+		.form-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+			gap: 20px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<header class="header">
+			<h1>Strategic CAC Calculator</h1>
+			<div class="header-actions">
+				<button id="presentationModeBtn" class="button presentation-mode">
+					Presentation Mode
+				</button>
+				<button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+					☀️
+				</button>
+			</div>
+		</header>
+
+		<div class="top-panel" id="topPanel">
+			<div class="tabs">
+				<div class="tab active" data-tab="basics">Business Basics</div>
+				<div class="tab" data-tab="customer">Customer Metrics</div>
+				<div class="tab" data-tab="financial">Financial Targets</div>
+			</div>
+
+			<form id="cpaForm">
+				<div id="basics" class="tab-content active">
+					<div class="form-grid">
+						<div class="input-group">
+							<label for="aov">Average Order Value ($):</label>
+							<div class="description">The average amount spent by customers per order before taxes.</div>
+							<input type="number" id="aov" step="100" placeholder="Enter value (e.g., 1500)" value="1500" required>
+						</div>
+						<div class="input-group">
+							<label for="taxRate">Tax Rate (%):</label>
+							<div class="description">The sales tax rate applied to orders. Set to 0 if taxes are passed through to customers.</div>
+							<input type="number" id="taxRate" step="0.1" placeholder="Enter percentage (e.g., 6.5)" value="6.5" required>
+						</div>
+						<div class="input-group">
+							<label for="returnRate">Return Rate (%):</label>
+							<div class="description">Percentage of orders returned (for defects, shipping errors, cancellations, etc.).</div>
+							<input type="number" id="returnRate" step="0.1" placeholder="Enter percentage (e.g., 3.5)" value="3.5" required>
+						</div>
+						<div class="input-group">
+							<label for="cosPercent">Cost of Sales as a Percent of Sales (%):</label>
+							<div class="description">Direct costs associated with your products including manufacturing, materials, and direct labor as a percentage of revenue.</div>
+							<input type="number" id="cosPercent" step="0.1" placeholder="Enter percentage (e.g., 42.0)" value="42.0" required>
+						</div>
+					</div>
+				</div>
+
+				<div id="customer" class="tab-content">
+					<div class="form-grid">
+						<div class="input-group">
+							<label for="returningCustomers">Returning customers (%):</label>
+							<div class="description">Percentage of customers making at least one more purchase over their lifetime.</div>
+							<input type="number" id="returningCustomers" step="0.1" placeholder="e.g., 11.0" value="11.0" required>
+						</div>
+						<div class="input-group">
+							<label for="repeatOrderRate">Repeat order rate (Lifetime):</label>
+							<div class="description">Avg. additional orders from a returning customer over their lifetime.</div>
+							<input type="number" id="repeatOrderRate" step="0.1" placeholder="e.g., 1.4" value="1.4" required>
+						</div>
+						<div class="input-group">
+							<label for="fulfillmentCost">Fulfillment cost per order (Shipping/Handling) ($):</label>
+							<div class="description">The average cost to package, ship, and deliver an order to the customer.</div>
+							<input type="number" id="fulfillmentCost" step="1" placeholder="e.g., 120" value="120" required>
+						</div>
+					</div>
+				</div>
+
+				<div id="financial" class="tab-content">
+					<div class="form-grid">
+						<div class="input-group">
+							<label for="gaPercent">G&A as a Percent of Sales (before ads cost) (%):</label>
+							<div class="description">General & Administrative overhead costs not tied to direct product costs (office rent, administrative salaries, utilities, insurance). This excludes marketing and advertising spend.</div>
+							<input type="number" id="gaPercent" step="0.1" placeholder="Enter percentage (e.g., 14.0)" value="14.0" required>
+						</div>
+						<div class="input-group">
+							<label for="targetNetMargin">Target Net Margin (%):</label>
+							<div class="description">Your desired net profit margin as a percentage of sales. This is the percentage of revenue that should become profit after all expenses (including marketing/advertising) are paid.</div>
+							<input type="number" id="targetNetMargin" step="0.1" placeholder="Enter percentage (e.g., 12.0)" value="12.0" required>
+						</div>
+					</div>
+				</div>
+			</form>
+
+			<div class="button-container">
+				<button id="calculateBtn" class="button calculate">Calculate</button>
+				<button id="resetBtn" class="button reset">Reset</button>
+				<button id="saveBtn" class="button save">Save Settings</button>
+				<button id="importBtn" class="button import">Import Settings</button>
+				<input type="file" id="fileInput" accept=".json" style="display: none;">
+			</div>
+		</div>
+
+		<div class="results-container">
+			<div class="results-header">
+				<h2 class="results-title">Results</h2>
+				<div class="metrics-legend">
+					<span class="legend-key"></span> Key marketing metrics for decision-making
+				</div>
+			</div>
+
+			<!-- Group 1: Revenue & Profitability Foundations -->
+			<div class="metrics-group">
+				<h3 class="group-title">Revenue & Profitability Foundations</h3>
+				<div class="results-grid">
+					<div class="result-card">
+						<div class="metric-label">
+							Average Order Value (Post Tax/Returns)
+							<button class="calc-toggle" data-target="aov-calc">+</button>
+						</div>
+						<div class="metric-value">$<span id="aovPostTaxReturns">0.00</span></div>
+						<div class="metric-explanation">This is your actual revenue per order after accounting for taxes and returns.</div>
+						<div class="calc-details" id="aov-calc">
+							<div class="calc-formula">Formula: AOV ÷ (1 + Tax Rate) × (1 - Return Rate)</div>
+							<div class="calc-step"><strong>Calculation:</strong> <span id="aov-calc-step"></span></div>
+							<div class="calc-result">Result: $<span id="aov-calc-result">0.00</span></div>
+						</div>
+					</div>
+					<div class="result-card key-metric">
+						<div class="metric-label">
+							Customer Lifetime Value (CLTV)
+							<button class="calc-toggle" data-target="cltv-calc">+</button>
+						</div>
+						<div class="metric-value">$<span id="customerLifetimeValue">0.00</span></div>
+						<div class="metric-explanation">The total expected revenue from a customer over their relationship with your business. Based on <span id="averageOrderCount">0.00</span> average orders per customer.</div>
+						<div class="calc-details" id="cltv-calc">
+							<div class="calc-formula">Formula: AOV (Post Tax/Returns) × Average Orders Per Customer</div>
+							<div class="calc-step"><strong>Step 1:</strong> Average Orders = 1 + (Returning Customer % × Repeat Order Rate)</div>
+							<div class="calc-step"><span id="cltv-calc-step1"></span></div>
+							<div class="calc-step"><strong>Step 2:</strong> CLTV = AOV × Average Orders</div>
+							<div class="calc-step"><span id="cltv-calc-step2"></span></div>
+							<div class="calc-result">Result: $<span id="cltv-calc-result">0.00</span></div>
+						</div>
+					</div>
+					<div class="result-card">
+						<div class="metric-label">
+							Gross Margin %
+							<button class="calc-toggle" data-target="gross-margin-calc">+</button>
+						</div>
+						<div class="metric-value"><span id="grossMarginPercent">0.00</span>%</div>
+						<div class="metric-explanation">Percentage of revenue remaining after cost of sales. Calculated as (Revenue - COGS) / Revenue × 100.</div>
+						<div class="calc-details" id="gross-margin-calc">
+							<div class="calc-formula">Formula: (1 - Cost of Sales %) × 100</div>
+							<div class="calc-step"><strong>Calculation:</strong> <span id="gross-margin-calc-step"></span></div>
+							<div class="calc-result">Result: <span id="gross-margin-calc-result">0.00</span>%</div>
+						</div>
+					</div>
+					<div class="result-card">
+						<div class="metric-label">
+							Contribution Margin (Before Ad Spend)
+							<button class="calc-toggle" data-target="contribution-calc">+</button>
+						</div>
+						<div class="metric-value">$<span id="contributionMargin">0.00</span> (<span id="contributionMarginPercent">0.00</span>%)</div>
+						<div class="metric-explanation">This is the amount each order contributes toward covering fixed costs and profit before advertising expenses. It includes revenue (post-tax/returns) minus variable costs (cost of sales and fulfillment).</div>
+						<div class="calc-details" id="contribution-calc">
+							<div class="calc-formula">Formula: AOV (Post Tax/Returns) × (1 - Cost of Sales %) - Fulfillment Cost</div>
+							<div class="calc-step"><strong>Calculation:</strong> <span id="contribution-calc-step"></span></div>
+							<div class="calc-step"><strong>Percentage:</strong> <span id="contribution-calc-percent"></span></div>
+							<div class="calc-result">Result: $<span id="contribution-calc-result">0.00</span> (<span id="contribution-calc-result-percent">0.00</span>%)</div>
+						</div>
+					</div>
+					<div class="result-card">
+						<div class="metric-label">
+							Gross Profit Per Order
+							<button class="calc-toggle" data-target="gross-profit-calc">+</button>
+						</div>
+						<div class="metric-value">$<span id="grossProfitPerOrder">0.00</span></div>
+						<div class="metric-explanation">Traditional gross profit from each order: revenue minus cost of goods sold and fulfillment costs only. Excludes G&A and other overhead expenses.</div>
+						<div class="calc-details" id="gross-profit-calc">
+							<div class="calc-formula">Formula: AOV (Post Tax/Returns) × (1 - Cost of Sales %) - Fulfillment Cost</div>
+							<div class="calc-step"><strong>Calculation:</strong> <span id="gross-profit-calc-step"></span></div>
+							<div class="calc-step"><em>Note: This is the same as Contribution Margin</em></div>
+							<div class="calc-result">Result: $<span id="gross-profit-calc-result">0.00</span></div>
+						</div>
+					</div>
+					<div class="result-card">
+						<div class="metric-label">
+							Operating Profit Per Order
+							<button class="calc-toggle" data-target="operating-profit-calc">+</button>
+						</div>
+						<div class="metric-value">$<span id="operatingProfitPerOrder">0.00</span></div>
+						<div class="metric-explanation">The operating profit from each order after deducting cost of sales, G&A, and fulfillment costs. This value excludes advertising costs.</div>
+						<div class="calc-details" id="operating-profit-calc">
+							<div class="calc-formula">Formula: AOV (Post Tax/Returns) × (1 - Cost of Sales % - G&A %) - Fulfillment Cost</div>
+							<div class="calc-step"><strong>Calculation:</strong> <span id="operating-profit-calc-step"></span></div>
+							<div class="calc-result">Result: $<span id="operating-profit-calc-result">0.00</span></div>
+						</div>
+					</div>
+					<div class="result-card key-metric">
+						<div class="metric-label">
+							Customer Lifetime Profit
+							<button class="calc-toggle" data-target="lifetime-profit-calc">+</button>
+						</div>
+						<div class="metric-value">$<span id="customerLifetimeProfit">0.00</span></div>
+						<div class="metric-explanation">The total expected operating profit from a customer over their relationship with your business, before acquisition costs.</div>
+						<div class="calc-details" id="lifetime-profit-calc">
+							<div class="calc-formula">Formula: Operating Profit Per Order × Average Orders Per Customer</div>
+							<div class="calc-step"><strong>Calculation:</strong> <span id="lifetime-profit-calc-step"></span></div>
+							<div class="calc-result">Result: $<span id="lifetime-profit-calc-result">0.00</span></div>
+						</div>
+					</div>
+					<div class="result-card">
+						<div class="metric-label">
+							Net Contribution Per Customer
+							<button class="calc-toggle" data-target="net-contribution-calc">+</button>
+						</div>
+						<div class="metric-value">$<span id="profitPerCustomer">0.00</span></div>
+						<div class="metric-explanation">Your profit per customer, taking into account returning customers and repeat orders, but before advertising costs.</div>
+						<div class="calc-details" id="net-contribution-calc">
+							<div class="calc-formula">Formula: Customer Lifetime Profit (same calculation)</div>
+							<div class="calc-step"><strong>Calculation:</strong> Operating Profit Per Order × Average Orders Per Customer</div>
+							<div class="calc-step"><span id="net-contribution-calc-step"></span></div>
+							<div class="calc-result">Result: $<span id="net-contribution-calc-result">0.00</span></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Waterfall Chart Section -->
+			<div class="waterfall-chart-container">
+				<h3 class="waterfall-title">First-Order Unit Economics Breakdown</h3>
+				<div class="waterfall-chart">
+					<div class="waterfall-bar bar-aov">
+						<div class="bar-value">$<span id="waterfall-aov">0</span></div>
+						<div class="bar-visual" id="waterfall-aov-bar"></div>
+						<div class="bar-label">Average Order<br>Value</div>
+					</div>
+					<div class="waterfall-bar bar-cogs">
+						<div class="bar-value">-$<span id="waterfall-cogs">0</span></div>
+						<div class="bar-visual" id="waterfall-cogs-bar"></div>
+						<div class="bar-label">Cost of<br>Goods Sold</div>
+					</div>
+					<div class="waterfall-bar bar-fulfillment">
+						<div class="bar-value">-$<span id="waterfall-fulfillment">0</span></div>
+						<div class="bar-visual" id="waterfall-fulfillment-bar"></div>
+						<div class="bar-label">Fulfillment<br>Cost</div>
+					</div>
+					<div class="waterfall-bar bar-ga">
+						<div class="bar-value">-$<span id="waterfall-ga">0</span></div>
+						<div class="bar-visual" id="waterfall-ga-bar"></div>
+						<div class="bar-label">General &<br>Administrative</div>
+					</div>
+					<div class="waterfall-bar bar-cac">
+						<div class="bar-value">-$<span id="waterfall-cac">0</span></div>
+						<div class="bar-visual" id="waterfall-cac-bar"></div>
+						<div class="bar-label">First-Order<br>CAC Allocation</div>
+					</div>
+					<div class="waterfall-bar bar-net">
+						<div class="bar-value">$<span id="waterfall-net">0</span></div>
+						<div class="bar-visual" id="waterfall-net-bar"></div>
+						<div class="bar-label">Net Contribution<br>Margin</div>
+					</div>
+				</div>
+				<div class="waterfall-summary">
+					<div class="summary-item">
+						<span class="summary-label">Starting Revenue:</span>
+						<span class="summary-value">$<span id="summary-aov">0</span></span>
+					</div>
+					<div class="summary-item">
+						<span class="summary-label">Total Costs:</span>
+						<span class="summary-value">$<span id="summary-costs">0</span></span>
+					</div>
+					<div class="summary-item">
+						<span class="summary-label">Net Margin:</span>
+						<span class="summary-value">$<span id="summary-margin">0</span></span>
+					</div>
+					<div class="summary-item">
+						<span class="summary-label">Margin %:</span>
+						<span class="summary-value"><span id="summary-margin-percent">0</span>%</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Group 2: Strategic CAC Targets -->
+			<div class="metrics-group">
+				<h3 class="group-title">Strategic CAC Targets</h3>
+				<div class="results-grid">
+					<div class="result-card key-metric">
+						<div class="metric-label">
+							Profit Driven CAC (New Customer)
+							<button class="calc-toggle" data-target="profit-cac-calc">+</button>
+						</div>
+						<div class="metric-value">$<span id="profitDrivenCAC">0.00</span></div>
+						<div class="metric-explanation">This is your target Customer Acquisition Cost for new customer campaigns. It represents the maximum amount you can spend to acquire a new customer while still meeting your profit goals.</div>
+						<div class="calc-details" id="profit-cac-calc">
+							<div class="calc-formula">Formula: Customer Lifetime Profit - (Customer Lifetime Value × Target Net Margin %)</div>
+							<div class="calc-step"><strong>Calculation:</strong> <span id="profit-cac-calc-step"></span></div>
+							<div class="calc-step"><em>CAC = Cost to acquire a new paying customer (excludes leads)</em></div>
+							<div class="calc-result">Result: $<span id="profit-cac-calc-result">0.00</span></div>
+						</div>
+					</div>
+					<div class="result-card key-metric">
+						<div class="metric-label">
+							Break-Even CAC
+							<button class="calc-toggle" data-target="breakeven-cac-calc">+</button>
+						</div>
+						<div class="metric-value">$<span id="breakEvenCAC">0.00</span></div>
+						<div class="metric-explanation">This is the maximum you can spend to acquire a customer without losing money. Spending above this amount means you're losing money on the customer relationship.</div>
+						<div class="calc-details" id="breakeven-cac-calc">
+							<div class="calc-formula">Formula: Customer Lifetime Profit</div>
+							<div class="calc-step"><strong>Calculation:</strong> <span id="breakeven-cac-calc-step"></span></div>
+							<div class="calc-step"><em>This is the maximum CAC where you break even with zero net profit</em></div>
+							<div class="calc-result">Result: $<span id="breakeven-cac-calc-result">0.00</span></div>
+						</div>
+					</div>
+					<div class="result-card key-metric">
+						<div class="metric-label">
+							LTV:CAC Ratio
+							<button class="calc-toggle" data-target="ltv-cac-calc">+</button>
+						</div>
+						<div class="metric-value"><span id="ltvCacRatio">0.00</span></div>
+						<div class="metric-explanation">The ratio of Customer Lifetime Value to Customer Acquisition Cost. A healthy ratio is typically 3:1 or higher, indicating strong unit economics.</div>
+						<div class="calc-details" id="ltv-cac-calc">
+							<div class="calc-formula">Formula: Customer Lifetime Value ÷ Profit Driven CAC</div>
+							<div class="calc-step"><strong>Calculation:</strong> <span id="ltv-cac-calc-step"></span></div>
+							<div class="calc-step"><em>A healthy ratio is typically 3:1 or higher</em></div>
+							<div class="calc-result">Result: <span id="ltv-cac-calc-result">0.00</span>:1</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Group 3: Lead Funnel Metrics -->
+			<div class="metrics-group">
+				<h3 class="group-title">Lead Funnel Metrics</h3>
+				<div class="cpl-model-section">
+					<div class="cpl-model-grid">
+						<div class="input-group">
+							<label for="cplModelCac">Strategic CAC Target</label>
+							<div class="description">Profit-Driven CAC pulled from the results above.</div>
+							<div class="readonly-input">$<span id="cplModelCac">0.00</span></div>
+						</div>
+						<div class="input-group">
+							<label for="leadConversionRate">Lead-to-Customer Conversion Rate (%)
+								<button class="calc-toggle" data-target="conversion-rate-calc" style="margin-left: 8px;">+</button>
+							</label>
+							<div class="description">What percentage of qualified leads become customers?</div>
+							<input type="number" id="leadConversionRate" step="0.5" value="10.0">
+							<div class="calc-details" id="conversion-rate-calc">
+								<div class="calc-formula">The percentage of qualified leads that convert to paying customers</div>
+								<div class="calc-step"><strong>Current Setting:</strong> <span id="conversion-rate-setting">10.0</span>%</div>
+								<div class="calc-step"><em>Adjust based on your actual funnel performance</em></div>
+							</div>
+						</div>
+						<div class="input-group">
+							<label for="targetCpl">
+								Tactical CPL Target
+								<button class="calc-toggle" data-target="cpl-calc">+</button>
+							</label>
+							<div class="description">The resulting allowable Cost Per Lead.</div>
+							<div class="cpl-output-value">$<span id="targetCpl">0.00</span></div>
+							<div class="calc-details" id="cpl-calc">
+								<div class="calc-formula">Formula: Profit Driven CAC × Lead-to-Customer Conversion Rate</div>
+								<div class="calc-step"><strong>Calculation:</strong> <span id="cpl-calc-step"></span></div>
+								<div class="calc-step"><em>This is your maximum allowable Cost Per Lead</em></div>
+								<div class="calc-result">Result: $<span id="cpl-calc-result">0.00</span></div>
+							</div>
+						</div>
+						<div class="input-group">
+							<button id="recalculateCplBtn" class="button recalculate">Recalculate CPL</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="metrics-group">
+				<h3 class="group-title">Efficiency & Time-Based Metrics</h3>
+				<div class="results-grid">
+					<div class="result-card key-metric">
+						<div class="metric-label">
+							Profit Driven ROAS (New Customer)
+							<button class="calc-toggle" data-target="roas-calc">+</button>
+						</div>
+						<div class="metric-value"><span id="targetROAS">0.00</span></div>
+						<div class="metric-explanation">This is your required Return on Ad Spend for new customer acquisition campaigns. For every dollar spent, you should aim to generate this much in lifetime revenue to be profitable.</div>
+						<div class="calc-details" id="roas-calc">
+							<div class="calc-formula">Formula: Customer Lifetime Value ÷ Profit Driven CAC</div>
+							<div class="calc-step"><strong>Calculation:</strong> <span id="roas-calc-step"></span></div>
+							<div class="calc-step"><em>This means for every $1 spent on ads, you need to generate this much in lifetime revenue</em></div>
+							<div class="calc-result">Result: <span id="roas-calc-result">0.00</span></div>
+						</div>
+					</div>
+					<div class="result-card" id="paybackCard" style="display: none;">
+						<div class="metric-label">
+							Estimated Payback Period
+							<button class="calc-toggle" data-target="payback-calc">+</button>
+						</div>
+						<div class="metric-value"><span id="paybackPeriod">0.0</span> orders</div>
+						<div class="metric-explanation">The estimated number of orders required to recover your customer acquisition cost, based on gross profit per order.</div>
+						<div class="calc-details" id="payback-calc">
+							<div class="calc-formula">Formula: Profit Driven CAC ÷ Operating Profit Per Order</div>
+							<div class="calc-step"><strong>Calculation:</strong> <span id="payback-calc-step"></span></div>
+							<div class="calc-step"><em>This shows how many orders are needed to recover the acquisition cost</em></div>
+							<div class="calc-result">Result: <span id="payback-calc-result">0.0</span> orders</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div id="notification" class="notification"></div>
+		<div id="floatingCalculate" class="floating-calculate">📊</div>
+		</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// DOM Elements
+			const form = document.getElementById('cpaForm');
+			const calculateBtn = document.getElementById('calculateBtn');
+			const resetBtn = document.getElementById('resetBtn');
+			const saveBtn = document.getElementById('saveBtn');
+			const importBtn = document.getElementById('importBtn');
+			const fileInput = document.getElementById('fileInput');
+			const notification = document.getElementById('notification');
+			const themeToggle = document.getElementById('themeToggle');
+			const topPanel = document.getElementById('topPanel');
+			const presentationModeBtn = document.getElementById('presentationModeBtn');
+			const tabs = document.querySelectorAll('.tab');
+			const tabContents = document.querySelectorAll('.tab-content');
+			const floatingCalculate = document.getElementById('floatingCalculate');
+			
+			// CPL Section Elements
+			const leadConversionRateInput = document.getElementById('leadConversionRate');
+			const recalculateCplBtn = document.getElementById('recalculateCplBtn');
+
+			// Initialize state
+			let isDarkMode = false;
+			let isPresentationMode = false;
+			let currentProfitDrivenCAC = 0;
+
+			// Event Listeners
+			calculateBtn.addEventListener('click', function(e) { e.preventDefault(); calculateResults(); });
+			resetBtn.addEventListener('click', function(e) { e.preventDefault(); resetForm(); });
+			saveBtn.addEventListener('click', function(e) { e.preventDefault(); saveSettings(); });
+			importBtn.addEventListener('click', function(e) { e.preventDefault(); fileInput.click(); });
+			fileInput.addEventListener('change', importSettings);
+			themeToggle.addEventListener('click', toggleDarkMode);
+			presentationModeBtn.addEventListener('click', togglePresentationMode);
+			floatingCalculate.addEventListener('click', calculateResults);
+			
+			// CPL Section Listeners
+			recalculateCplBtn.addEventListener('click', calculateCPL);
+			leadConversionRateInput.addEventListener('input', calculateCPL);
+			leadConversionRateInput.addEventListener('input', updateConversionRateDisplay);
+
+			// Calculation details toggle listeners
+			document.addEventListener('click', function(e) {
+				if (e.target.classList.contains('calc-toggle')) {
+					toggleCalculationDetails(e.target);
+				}
+			});
+
+			tabs.forEach(tab => {
+				tab.addEventListener('click', () => {
+					tabs.forEach(t => t.classList.remove('active'));
+					tabContents.forEach(content => content.classList.remove('active'));
+					tab.classList.add('active');
+					document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+				});
+			});
+
+			function toggleCalculationDetails(button) {
+				const targetId = button.getAttribute('data-target');
+				const details = document.getElementById(targetId);
+				const isExpanded = details.classList.contains('expanded');
+				
+				if (isExpanded) {
+					details.classList.remove('expanded');
+					button.classList.remove('expanded');
+					button.textContent = '+';
+				} else {
+					details.classList.add('expanded');
+					button.classList.add('expanded');
+					button.textContent = '×';
+					// Update the calculation details when expanded
+					updateCalculationDetails();
+				}
+			}
+
+			function updateConversionRateDisplay() {
+				const rate = document.getElementById('leadConversionRate').value;
+				const element = document.getElementById('conversion-rate-setting');
+				if (element) {
+					element.textContent = rate;
+				}
+			}
+
+			function updateCalculationDetails() {
+				// Get current input values
+				const aov = parseFloat(document.getElementById('aov').value) || 0;
+				const taxRate = parseFloat(document.getElementById('taxRate').value) / 100 || 0;
+				const returnRate = parseFloat(document.getElementById('returnRate').value) / 100 || 0;
+				const cosPercent = parseFloat(document.getElementById('cosPercent').value) / 100 || 0;
+				const gaPercent = parseFloat(document.getElementById('gaPercent').value) / 100 || 0;
+				const fulfillmentCost = parseFloat(document.getElementById('fulfillmentCost').value) || 0;
+				const returningCustomers = parseFloat(document.getElementById('returningCustomers').value) / 100 || 0;
+				const repeatOrderRate = parseFloat(document.getElementById('repeatOrderRate').value) || 0;
+				const targetNetMargin = parseFloat(document.getElementById('targetNetMargin').value) / 100 || 0;
+				const leadConversionRate = parseFloat(document.getElementById('leadConversionRate').value) / 100 || 0;
+
+				// Calculations
+				const aovPostTaxReturns = aov / (1 + taxRate) * (1 - returnRate);
+				const grossMarginPercent = (1 - cosPercent) * 100;
+				const contributionMargin = aovPostTaxReturns * (1 - cosPercent) - fulfillmentCost;
+				const contributionMarginPercent = aovPostTaxReturns > 0 ? (contributionMargin / aovPostTaxReturns) * 100 : 0;
+				const grossProfitPerOrder = aovPostTaxReturns * (1 - cosPercent) - fulfillmentCost;
+				const operatingProfitPerOrder = aovPostTaxReturns * (1 - cosPercent - gaPercent) - fulfillmentCost;
+				const averageOrdersPerCustomer = 1 + returningCustomers * repeatOrderRate;
+				const customerLifetimeValue = aovPostTaxReturns * averageOrdersPerCustomer;
+				const customerLifetimeProfit = operatingProfitPerOrder * averageOrdersPerCustomer;
+				const profitDrivenCAC = Math.max(0, customerLifetimeProfit - (customerLifetimeValue * targetNetMargin));
+				const targetCPL = profitDrivenCAC * leadConversionRate;
+				const targetROAS = profitDrivenCAC > 0 ? customerLifetimeValue / profitDrivenCAC : 0;
+				const ltvCacRatio = profitDrivenCAC > 0 ? customerLifetimeValue / profitDrivenCAC : 0;
+				const paybackPeriod = operatingProfitPerOrder > 0 ? profitDrivenCAC / operatingProfitPerOrder : 0;
+
+				// Update calculation details
+				updateCalcDetail('aov-calc-step', `$${aov.toFixed(2)} ÷ (1 + ${(taxRate * 100).toFixed(1)}%) × (1 - ${(returnRate * 100).toFixed(1)}%)`);
+				updateCalcDetail('aov-calc-result', aovPostTaxReturns.toFixed(2));
+
+				updateCalcDetail('cltv-calc-step1', `1 + (${(returningCustomers * 100).toFixed(1)}% × ${repeatOrderRate.toFixed(1)}) = ${averageOrdersPerCustomer.toFixed(3)} orders`);
+				updateCalcDetail('cltv-calc-step2', `$${aovPostTaxReturns.toFixed(2)} × ${averageOrdersPerCustomer.toFixed(3)} orders`);
+				updateCalcDetail('cltv-calc-result', customerLifetimeValue.toFixed(2));
+
+				updateCalcDetail('gross-margin-calc-step', `(1 - ${(cosPercent * 100).toFixed(1)}%) × 100`);
+				updateCalcDetail('gross-margin-calc-result', grossMarginPercent.toFixed(1));
+
+				updateCalcDetail('contribution-calc-step', `$${aovPostTaxReturns.toFixed(2)} × (1 - ${(cosPercent * 100).toFixed(1)}%) - $${fulfillmentCost.toFixed(2)}`);
+				updateCalcDetail('contribution-calc-percent', `($${contributionMargin.toFixed(2)} ÷ $${aovPostTaxReturns.toFixed(2)}) × 100 = ${contributionMarginPercent.toFixed(1)}%`);
+				updateCalcDetail('contribution-calc-result', contributionMargin.toFixed(2));
+				updateCalcDetail('contribution-calc-result-percent', contributionMarginPercent.toFixed(1));
+
+				updateCalcDetail('gross-profit-calc-step', `$${aovPostTaxReturns.toFixed(2)} × (1 - ${(cosPercent * 100).toFixed(1)}%) - $${fulfillmentCost.toFixed(2)}`);
+				updateCalcDetail('gross-profit-calc-result', grossProfitPerOrder.toFixed(2));
+
+				updateCalcDetail('operating-profit-calc-step', `$${aovPostTaxReturns.toFixed(2)} × (1 - ${(cosPercent * 100).toFixed(1)}% - ${(gaPercent * 100).toFixed(1)}%) - $${fulfillmentCost.toFixed(2)}`);
+				updateCalcDetail('operating-profit-calc-result', operatingProfitPerOrder.toFixed(2));
+
+				updateCalcDetail('lifetime-profit-calc-step', `$${operatingProfitPerOrder.toFixed(2)} × ${averageOrdersPerCustomer.toFixed(3)} orders`);
+				updateCalcDetail('lifetime-profit-calc-result', customerLifetimeProfit.toFixed(2));
+
+				updateCalcDetail('net-contribution-calc-step', `$${operatingProfitPerOrder.toFixed(2)} × ${averageOrdersPerCustomer.toFixed(3)} orders`);
+				updateCalcDetail('net-contribution-calc-result', customerLifetimeProfit.toFixed(2));
+
+				updateCalcDetail('profit-cac-calc-step', `$${customerLifetimeProfit.toFixed(2)} - ($${customerLifetimeValue.toFixed(2)} × ${(targetNetMargin * 100).toFixed(1)}%)`);
+				updateCalcDetail('profit-cac-calc-result', profitDrivenCAC.toFixed(2));
+
+				updateCalcDetail('breakeven-cac-calc-step', `$${customerLifetimeProfit.toFixed(2)}`);
+				updateCalcDetail('breakeven-cac-calc-result', customerLifetimeProfit.toFixed(2));
+
+				updateCalcDetail('ltv-cac-calc-step', `$${customerLifetimeValue.toFixed(2)} ÷ $${profitDrivenCAC.toFixed(2)}`);
+				updateCalcDetail('ltv-cac-calc-result', ltvCacRatio.toFixed(2));
+
+				updateCalcDetail('cpl-calc-step', `$${profitDrivenCAC.toFixed(2)} × ${(leadConversionRate * 100).toFixed(1)}%`);
+				updateCalcDetail('cpl-calc-result', targetCPL.toFixed(2));
+
+				updateCalcDetail('roas-calc-step', `$${customerLifetimeValue.toFixed(2)} ÷ $${profitDrivenCAC.toFixed(2)}`);
+				updateCalcDetail('roas-calc-result', targetROAS.toFixed(2));
+
+				updateCalcDetail('payback-calc-step', `$${profitDrivenCAC.toFixed(2)} ÷ $${operatingProfitPerOrder.toFixed(2)}`);
+				updateCalcDetail('payback-calc-result', paybackPeriod.toFixed(2));
+			}
+
+			function updateCalcDetail(id, value) {
+				const element = document.getElementById(id);
+				if (element) {
+					element.textContent = value;
+				}
+			}
+
+			// Add input listeners for real-time updates
+			const inputs = ['aov', 'taxRate', 'returnRate', 'cosPercent', 'gaPercent', 'fulfillmentCost', 'returningCustomers', 'repeatOrderRate', 'targetNetMargin'];
+			inputs.forEach(id => {
+				const input = document.getElementById(id);
+				if (input) {
+					input.addEventListener('input', updateCalculationDetails);
+				}
+			});
+
+			function toggleDarkMode() {
+				isDarkMode = !isDarkMode;
+				document.body.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+				themeToggle.textContent = isDarkMode ? '🌙' : '☀️';
+			}
+
+			function togglePresentationMode() {
+				isPresentationMode = !isPresentationMode;
+				document.body.classList.toggle('presentation-mode-active', isPresentationMode);
+				showNotification(isPresentationMode ? 'Presentation mode activated' : 'Presentation mode deactivated');
+			}
+
+			function showNotification(message) {
+				notification.textContent = message;
+				notification.style.display = 'block';
+				setTimeout(() => {
+					notification.style.display = 'none';
+				}, 3000);
+			}
+
+			function calculateCPL() {
+				const conversionRate = parseFloat(leadConversionRateInput.value) / 100 || 0;
+				const targetCPL = currentProfitDrivenCAC * conversionRate;
+				updateResult('targetCpl', targetCPL);
+				updateCalculationDetails();
+			}
+
+			function calculateResults() {
+				// Get all inputs
+				const aov = parseFloat(document.getElementById('aov').value) || 0;
+				const taxRate = parseFloat(document.getElementById('taxRate').value) / 100 || 0;
+				const returnRate = parseFloat(document.getElementById('returnRate').value) / 100 || 0;
+				const cosPercent = parseFloat(document.getElementById('cosPercent').value) / 100 || 0;
+				const gaPercent = parseFloat(document.getElementById('gaPercent').value) / 100 || 0;
+				const fulfillmentCost = parseFloat(document.getElementById('fulfillmentCost').value) || 0;
+				const returningCustomers = parseFloat(document.getElementById('returningCustomers').value) / 100 || 0;
+				const repeatOrderRate = parseFloat(document.getElementById('repeatOrderRate').value) || 0;
+				const targetNetMargin = parseFloat(document.getElementById('targetNetMargin').value) / 100 || 0;
+
+				// Core calculations
+				const aovPostTaxReturns = aov / (1 + taxRate) * (1 - returnRate);
+				const grossMarginPercent = (1 - cosPercent) * 100;
+				const contributionMargin = aovPostTaxReturns * (1 - cosPercent) - fulfillmentCost;
+				const contributionMarginPercent = aovPostTaxReturns > 0 ? (contributionMargin / aovPostTaxReturns) * 100 : 0;
+				
+				// True gross profit (revenue - COGS - fulfillment, no G&A)
+				const grossProfitPerOrder = aovPostTaxReturns * (1 - cosPercent) - fulfillmentCost;
+				
+				// Operating profit (includes G&A)
+				const operatingProfitPerOrder = aovPostTaxReturns * (1 - cosPercent - gaPercent) - fulfillmentCost;
+				
+				const averageOrdersPerCustomer = 1 + returningCustomers * repeatOrderRate;
+				const customerLifetimeProfit = operatingProfitPerOrder * averageOrdersPerCustomer;
+				const breakEvenCAC = customerLifetimeProfit;
+				const customerLifetimeValue = aovPostTaxReturns * averageOrdersPerCustomer;
+				let profitDrivenCAC = customerLifetimeProfit - (customerLifetimeValue * targetNetMargin);
+				
+				// Handle negative CAC (unrealistic scenario)
+				let isUnrealisticScenario = false;
+				if (profitDrivenCAC < 0) {
+					profitDrivenCAC = 0; // Can't have negative acquisition costs
+					isUnrealisticScenario = true;
+				}
+				
+				const targetROAS = profitDrivenCAC > 0 ? customerLifetimeValue / profitDrivenCAC : Infinity;
+				const ltvCacRatio = profitDrivenCAC > 0 ? customerLifetimeValue / profitDrivenCAC : Infinity;
+				const paybackPeriod = operatingProfitPerOrder > 0 ? profitDrivenCAC / operatingProfitPerOrder : Infinity;
+				
+				// Update global CAC for CPL model
+				currentProfitDrivenCAC = profitDrivenCAC;
+
+				// Update main results UI
+				updateResult('aovPostTaxReturns', aovPostTaxReturns);
+				updateResult('grossMarginPercent', grossMarginPercent);
+				updateResult('contributionMargin', contributionMargin);
+				updateResult('contributionMarginPercent', contributionMarginPercent);
+				updateResult('grossProfitPerOrder', grossProfitPerOrder);
+				updateResult('operatingProfitPerOrder', operatingProfitPerOrder);
+				updateResult('profitPerCustomer', customerLifetimeProfit);
+				updateResult('customerLifetimeValue', customerLifetimeValue);
+				updateResult('customerLifetimeProfit', customerLifetimeProfit);
+				document.getElementById('averageOrderCount').textContent = averageOrdersPerCustomer.toFixed(2);
+				updateResult('breakEvenCAC', breakEvenCAC);
+				updateResult('profitDrivenCAC', profitDrivenCAC);
+				updateResult('targetROAS', targetROAS);
+				updateResult('ltvCacRatio', ltvCacRatio);
+				
+				// Handle payback period display
+				const paybackCard = document.getElementById('paybackCard');
+				if (profitDrivenCAC > 0 && operatingProfitPerOrder > 0 && paybackPeriod !== Infinity) {
+					paybackCard.style.display = 'block';
+					updateResult('paybackPeriod', paybackPeriod);
+				} else {
+					paybackCard.style.display = 'none';
+				}
+				
+				// Update CPL Model Section
+				updateResult('cplModelCac', currentProfitDrivenCAC);
+				calculateCPL();
+
+				// Update Waterfall Chart
+				updateWaterfallChart(aovPostTaxReturns, cosPercent, fulfillmentCost, profitDrivenCAC);
+
+				// Update calculation details
+				updateCalculationDetails();
+				updateConversionRateDisplay();
+
+				// Animate cards
+				const resultCards = document.querySelectorAll('.result-card');
+				resultCards.forEach(card => card.style.transform = 'translateY(0)');
+				
+				// Show appropriate notification
+				if (isUnrealisticScenario) {
+					showNotification('⚠️ Target net margin too high - CAC set to $0. Consider lowering target margin.', 5000);
+				} else {
+					showNotification('Calculations completed.');
+				}
+			}
+
+			function updateWaterfallChart(aov, cosPercent, fulfillmentCost, totalCAC) {
+				const gaPercent = parseFloat(document.getElementById('gaPercent').value) / 100 || 0;
+				const returningCustomers = parseFloat(document.getElementById('returningCustomers').value) / 100 || 0;
+				const repeatOrderRate = parseFloat(document.getElementById('repeatOrderRate').value) || 0;
+				
+				// Calculate average orders per customer for first-order CAC allocation
+				const averageOrdersPerCustomer = 1 + returningCustomers * repeatOrderRate;
+				
+				// Calculate first-order CAC allocation (portion of total CAC recovered on first order)
+				const firstOrderCAC = totalCAC / averageOrdersPerCustomer;
+				
+				const cogs = aov * cosPercent;
+				const gaCost = aov * gaPercent;
+				const netMargin = aov - cogs - fulfillmentCost - gaCost - firstOrderCAC;
+				const totalCosts = cogs + fulfillmentCost + gaCost + firstOrderCAC;
+				const marginPercent = aov > 0 ? (netMargin / aov) * 100 : 0;
+
+				// Update text values - show negative values properly
+				document.getElementById('waterfall-aov').textContent = Math.round(aov).toLocaleString();
+				document.getElementById('waterfall-cogs').textContent = Math.round(cogs).toLocaleString();
+				document.getElementById('waterfall-fulfillment').textContent = Math.round(fulfillmentCost).toLocaleString();
+				document.getElementById('waterfall-ga').textContent = Math.round(gaCost).toLocaleString();
+				document.getElementById('waterfall-cac').textContent = Math.round(firstOrderCAC).toLocaleString();
+				
+				// Handle negative net margin display
+				const netMarginElement = document.getElementById('waterfall-net');
+				const netMarginBar = document.getElementById('waterfall-net-bar');
+				const netMarginContainer = netMarginElement.closest('.bar-value');
+				
+				if (netMargin < 0) {
+					netMarginElement.textContent = Math.round(Math.abs(netMargin)).toLocaleString();
+					netMarginContainer.innerHTML = '-$<span id="waterfall-net">' + netMarginElement.textContent + '</span>';
+					// Change bar color to red for negative margin
+					netMarginBar.style.backgroundColor = '#e74c3c';
+				} else {
+					netMarginElement.textContent = Math.round(netMargin).toLocaleString();
+					netMarginContainer.innerHTML = '$<span id="waterfall-net">' + netMarginElement.textContent + '</span>';
+					// Reset to green for positive margin  
+					netMarginBar.style.backgroundColor = '#27ae60';
+				}
+
+				// Update summary with proper negative formatting
+				document.getElementById('summary-aov').textContent = Math.round(aov).toLocaleString();
+				document.getElementById('summary-costs').textContent = Math.round(totalCosts).toLocaleString();
+				
+				const summaryMarginElement = document.getElementById('summary-margin');
+				if (netMargin < 0) {
+					summaryMarginElement.textContent = '(' + Math.round(Math.abs(netMargin)).toLocaleString() + ')';
+					summaryMarginElement.style.color = '#e74c3c';
+				} else {
+					summaryMarginElement.textContent = Math.round(netMargin).toLocaleString();
+					summaryMarginElement.style.color = '';
+				}
+				
+				const marginPercentElement = document.getElementById('summary-margin-percent');
+				marginPercentElement.textContent = marginPercent.toFixed(1);
+				if (marginPercent < 0) {
+					marginPercentElement.style.color = '#e74c3c';
+				} else {
+					marginPercentElement.style.color = '';
+				}
+
+				// Calculate bar heights (as percentage of max value for scaling)
+				const maxValue = Math.max(aov, cogs, fulfillmentCost, gaCost, firstOrderCAC, Math.abs(netMargin));
+				const baseHeight = 200; // Base height in pixels
+				
+				const aovHeight = (aov / maxValue) * baseHeight;
+				const cogsHeight = (cogs / maxValue) * baseHeight;
+				const fulfillmentHeight = (fulfillmentCost / maxValue) * baseHeight;
+				const gaHeight = (gaCost / maxValue) * baseHeight;
+				const cacHeight = (firstOrderCAC / maxValue) * baseHeight;
+				
+				// Handle negative margin height - still show the bar but with different color
+				const netHeight = (Math.abs(netMargin) / maxValue) * baseHeight;
+
+				// Update bar heights with animation
+				setTimeout(() => {
+					document.getElementById('waterfall-aov-bar').style.height = aovHeight + 'px';
+					document.getElementById('waterfall-cogs-bar').style.height = cogsHeight + 'px';
+					document.getElementById('waterfall-fulfillment-bar').style.height = fulfillmentHeight + 'px';
+					document.getElementById('waterfall-ga-bar').style.height = gaHeight + 'px';
+					document.getElementById('waterfall-cac-bar').style.height = cacHeight + 'px';
+					document.getElementById('waterfall-net-bar').style.height = netHeight + 'px';
+				}, 100);
+			}
+			
+			function updateResult(id, value) {
+				const element = document.getElementById(id);
+				if (element) {
+					element.style.transition = 'color 0.3s';
+					element.style.color = isDarkMode ? '#2ecc71' : '#27ae60';
+					if (value === Infinity || isNaN(value)) {
+						element.textContent = 'N/A';
+					} else {
+						element.textContent = value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+					}
+					setTimeout(() => { element.style.color = ''; }, 1000);
+				}
+			}
+
+			function resetForm() {
+				// Reset to default values
+				document.getElementById('aov').value = '1500';
+				document.getElementById('taxRate').value = '6.5';
+				document.getElementById('returnRate').value = '3.5';
+				document.getElementById('cosPercent').value = '42.0';
+				document.getElementById('gaPercent').value = '14.0';
+				document.getElementById('fulfillmentCost').value = '120';
+				document.getElementById('returningCustomers').value = '11.0';
+				document.getElementById('repeatOrderRate').value = '1.4';
+				document.getElementById('targetNetMargin').value = '12.0';
+				
+				const resultIds = ['aovPostTaxReturns', 'grossMarginPercent', 'contributionMargin', 'contributionMarginPercent', 
+								   'grossProfitPerOrder', 'operatingProfitPerOrder', 'profitPerCustomer', 'customerLifetimeValue', 
+								   'customerLifetimeProfit', 'breakEvenCAC', 'profitDrivenCAC', 'targetROAS', 'ltvCacRatio', 'paybackPeriod',
+								   'cplModelCac', 'targetCpl'];
+				resultIds.forEach(id => {
+					const el = document.getElementById(id);
+					if (el) el.textContent = '0.00';
+				});
+				document.getElementById('averageOrderCount').textContent = '0.00';
+				document.getElementById('leadConversionRate').value = '10.0';
+				document.getElementById('paybackCard').style.display = 'none';
+				
+				// Close all expanded calculation details
+				const expandedDetails = document.querySelectorAll('.calc-details.expanded');
+				const expandedToggles = document.querySelectorAll('.calc-toggle.expanded');
+				expandedDetails.forEach(detail => detail.classList.remove('expanded'));
+				expandedToggles.forEach(toggle => {
+					toggle.classList.remove('expanded');
+					toggle.textContent = '+';
+				});
+				
+				// Reset waterfall chart
+				resetWaterfallChart();
+				
+				// Update calculation details with reset values
+				updateCalculationDetails();
+				updateConversionRateDisplay();
+				
+				showNotification('Form has been reset to default values');
+			}
+
+			function resetWaterfallChart() {
+				// Reset all waterfall values to 0
+				document.getElementById('waterfall-aov').textContent = '0';
+				document.getElementById('waterfall-cogs').textContent = '0';
+				document.getElementById('waterfall-fulfillment').textContent = '0';
+				document.getElementById('waterfall-ga').textContent = '0';
+				document.getElementById('waterfall-cac').textContent = '0';
+				
+				// Reset net margin with proper formatting
+				const netMarginContainer = document.getElementById('waterfall-net').closest('.bar-value');
+				netMarginContainer.innerHTML = '$<span id="waterfall-net">0</span>';
+
+				// Reset summary values
+				document.getElementById('summary-aov').textContent = '0';
+				document.getElementById('summary-costs').textContent = '0';
+				
+				const summaryMarginElement = document.getElementById('summary-margin');
+				summaryMarginElement.textContent = '0';
+				summaryMarginElement.style.color = '';
+				
+				const marginPercentElement = document.getElementById('summary-margin-percent');
+				marginPercentElement.textContent = '0.0';
+				marginPercentElement.style.color = '';
+
+				// Reset bar heights and colors
+				const barElements = ['waterfall-aov-bar', 'waterfall-cogs-bar', 'waterfall-fulfillment-bar', 'waterfall-ga-bar', 'waterfall-cac-bar', 'waterfall-net-bar'];
+				barElements.forEach(id => {
+					const element = document.getElementById(id);
+					element.style.height = '0px';
+					// Reset net margin bar color to default green
+					if (id === 'waterfall-net-bar') {
+						element.style.backgroundColor = '#27ae60';
+					}
+				});
+			}
+			
+			function saveSettings() {
+				const settings = {
+					aov: document.getElementById('aov').value, 
+					taxRate: document.getElementById('taxRate').value, 
+					returnRate: document.getElementById('returnRate').value,
+					cosPercent: document.getElementById('cosPercent').value, 
+					gaPercent: document.getElementById('gaPercent').value, 
+					fulfillmentCost: document.getElementById('fulfillmentCost').value,
+					returningCustomers: document.getElementById('returningCustomers').value, 
+					repeatOrderRate: document.getElementById('repeatOrderRate').value, 
+					targetNetMargin: document.getElementById('targetNetMargin').value
+				};
+				const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(settings, null, 2));
+				const downloadAnchorNode = document.createElement('a');
+				downloadAnchorNode.setAttribute("href", dataStr);
+				downloadAnchorNode.setAttribute("download", "cac_calculator_settings.json");
+				document.body.appendChild(downloadAnchorNode);
+				downloadAnchorNode.click();
+				downloadAnchorNode.remove();
+				showNotification('Settings saved to JSON file.');
+			}
+
+			function importSettings(event) {
+				const file = event.target.files[0];
+				if (file) {
+					const reader = new FileReader();
+					reader.onload = function(e) {
+						try {
+							const settings = JSON.parse(e.target.result);
+							populateForm(settings);
+							calculateResults();
+							showNotification('Settings imported successfully.');
+						} catch (error) {
+							notification.style.backgroundColor = "#e74c3c";
+							showNotification('Error importing settings. Please check JSON file.');
+							setTimeout(() => { notification.style.backgroundColor = ""; }, 3000);
+						}
+					};
+					reader.readAsText(file);
+				}
+				event.target.value = null;
+			}
+
+			function populateForm(values) {
+				document.getElementById('aov').value = values.aov || '1500';
+				document.getElementById('taxRate').value = values.taxRate || '6.5';
+				document.getElementById('returnRate').value = values.returnRate || '3.5';
+				document.getElementById('cosPercent').value = values.cosPercent || '42.0';
+				document.getElementById('gaPercent').value = values.gaPercent || '14.0';
+				document.getElementById('fulfillmentCost').value = values.fulfillmentCost || '120';
+				document.getElementById('returningCustomers').value = values.returningCustomers || '11.0';
+				document.getElementById('repeatOrderRate').value = values.repeatOrderRate || '1.4';
+				document.getElementById('targetNetMargin').value = values.targetNetMargin || '12.0';
+			}
+			
+			// Auto-calculate on load
+			setTimeout(() => {
+				calculateResults();
+				updateCalculationDetails();
+				updateConversionRateDisplay();
+			}, 100);
+		});
+	</script>
+</body>
+</html>
