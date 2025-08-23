@@ -1,14 +1,47 @@
-# Strategic CAC Calculator Test Suite
+# Strategic CAC Calculator
 
-A comprehensive test suite for the VersaTube Strategic Customer Acquisition Cost (CAC) Calculator, ensuring reliability, accuracy, and performance across all features and use cases.
+A sophisticated web-based tool for calculating Customer Acquisition Cost (CAC), Customer Lifetime Value (CLTV), and optimizing marketing spend. Originally built for VersaTube, this calculator helps businesses determine their optimal marketing budgets and customer acquisition strategies.
 
 ## 🎯 Overview
 
-This test suite provides complete coverage for the Strategic CAC Calculator, a sophisticated financial tool for determining optimal customer acquisition costs, customer lifetime values, and marketing targets. The suite includes unit tests, integration tests, end-to-end scenarios, performance benchmarks, and cross-browser compatibility testing.
+The Strategic CAC Calculator is a comprehensive financial tool that helps businesses:
+- **Calculate Customer Acquisition Cost (CAC)** with profit targets
+- **Determine Customer Lifetime Value (CLTV)** with repeat purchase modeling
+- **Optimize marketing spend** with target ROAS and CPL calculations
+- **Analyze unit economics** with waterfall visualization
+- **Plan growth strategies** with scenario modeling
 
-## 🏗️ Test Architecture
+This repository includes both the calculator application and a comprehensive test suite ensuring reliability and accuracy.
 
-### Test Types
+## 🚀 Features
+
+### Core Calculations
+- **Customer Acquisition Cost (CAC)** - Profit-driven and break-even calculations
+- **Customer Lifetime Value (CLTV)** - Including repeat purchase modeling
+- **Return on Ad Spend (ROAS)** - Target efficiency metrics
+- **Cost Per Lead (CPL)** - Lead funnel optimization
+- **LTV:CAC Ratios** - Unit economics health indicators
+
+### Interactive Features
+- **Multi-tab Interface** - Organized data entry (Business Basics, Customer Metrics, Financial Targets)
+- **Real-time Calculations** - Instant updates as you change inputs
+- **Expandable Details** - See formulas and calculation breakdowns
+- **Waterfall Visualization** - Visual breakdown of unit economics
+- **Dark/Light Themes** - Customizable appearance
+- **Presentation Mode** - Clean view for client presentations
+- **Settings Import/Export** - Save and share configurations
+
+## 🏗️ Technical Architecture
+
+### Application Structure
+- **Single Page Application** - Pure HTML/CSS/JavaScript
+- **Responsive Design** - Works on desktop and mobile
+- **Progressive Enhancement** - Functional without JavaScript frameworks
+- **Accessibility Compliant** - Screen reader and keyboard navigation support
+
+### Test Suite
+
+This repository includes a comprehensive test suite ensuring reliability:
 
 - **Unit Tests** (`tests/unit/`) - Individual calculation function testing
 - **Integration Tests** (`tests/integration/`) - UI component interaction testing  
@@ -17,81 +50,57 @@ This test suite provides complete coverage for the Strategic CAC Calculator, a s
 - **Performance Tests** (`tests/performance/`) - Load testing and performance benchmarking
 - **Browser E2E** (`tests/e2e-playwright/`) - Real browser testing with Playwright
 
-### Key Features Tested
+## 🚀 Getting Started
 
-✅ **Financial Calculations**
-- Customer Lifetime Value (CLTV)
-- Profit-Driven CAC
-- Break-even CAC
-- Target ROAS
-- LTV:CAC Ratios
-- Cost Per Lead (CPL)
+### Using the Calculator
 
-✅ **User Interface**
-- Tab navigation
-- Real-time calculation updates
-- Calculation details expansion
-- Theme switching (light/dark)
-- Presentation mode
-- Waterfall chart visualization
+1. **Open the Calculator**
+   - Open `cac-calculator.html` in any modern web browser
+   - Or visit the live demo: [Strategic CAC Calculator](https://dustydean.github.io/cac-calculator)
 
-✅ **Advanced Features**
-- Settings import/export
-- Form validation
-- Error notifications
-- Responsive design
-- Accessibility compliance
+2. **Enter Your Business Data**
+   - **Business Basics**: AOV, tax rate, return rate, cost of sales
+   - **Customer Metrics**: Retention rates, fulfillment costs
+   - **Financial Targets**: G&A costs, target profit margins
 
-## 🚀 Quick Start
+3. **View Results**
+   - See calculated CAC, CLTV, ROAS targets
+   - Explore calculation details by clicking "+" buttons
+   - Use the waterfall chart to understand unit economics
 
-### Prerequisites
+### For Developers
 
+#### Prerequisites
 - Node.js 18+ 
 - npm or yarn
 
-### Installation
-
+#### Installation
 ```bash
-# Clone and install dependencies
+# Clone the repository
+git clone https://github.com/dustydean/cac-calculator.git
+cd cac-calculator
+
+# Install test dependencies
 npm install
 
 # Install Playwright browsers (for E2E tests)
 npx playwright install
 ```
 
-### Running Tests
+#### Running Tests
 
 ```bash
 # Run all Jest tests (unit, integration, performance)
 npm test
 
-# Run tests in watch mode
-npm run test:watch
-
 # Run tests with coverage report
 npm run test:coverage
-
-# Run only performance tests
-npm run test:performance
 
 # Run Playwright E2E tests
 npm run test:e2e
 
-# Run all test suites
-npm run test:all
-
-# Lint code
-npm run lint
-```
-
-### Test in Browser
-
-```bash
-# Start local server
+# Start local development server
 npm run serve
-
-# In another terminal, run browser tests
-npm run test:e2e
 ```
 
 ## 📊 Test Coverage

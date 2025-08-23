@@ -1,7 +1,7 @@
 {
-  "name": "strategic-cac-calculator-tests",
+  "name": "strategic-cac-calculator",
   "version": "1.0.0",
-  "description": "Comprehensive test suite for Strategic CAC Calculator - ensuring reliability and accuracy of financial calculations",
+  "description": "Strategic CAC Calculator - Web-based tool for calculating Customer Acquisition Cost, Customer Lifetime Value, and optimizing marketing spend",
   "main": "cac-calculator.html",
   "scripts": {
     "test": "jest",
@@ -40,17 +40,20 @@
     ]
   },
   "keywords": [
-    "testing",
-    "jest",
-    "playwright",
-    "e2e-testing",
-    "unit-testing",
-    "integration-testing",
-    "performance-testing",
     "cac-calculator",
+    "customer-acquisition-cost",
+    "customer-lifetime-value",
+    "cltv",
+    "marketing-analytics",
     "financial-calculator",
+    "unit-economics",
+    "roas",
+    "cost-per-lead",
+    "marketing-roi",
+    "business-metrics",
     "javascript",
-    "test-automation"
+    "html",
+    "css"
   ],
   "repository": {
     "type": "git",
