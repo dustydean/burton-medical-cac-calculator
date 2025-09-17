@@ -380,6 +380,18 @@ const monthlyCAC = profitDrivenCAC * seasonalFactor * (0.95 + Math.random() * 0.
 
 ---
 
+## Market Research & Background
+
+### Burton Medical Company Research
+Comprehensive market analysis and company background research is available in our research documentation:
+- **[Burton Medical Research Document](./research/burton-medical-research.pdf)** - Detailed company analysis, market positioning, and strategic insights
+- **Key Findings**: Healthcare lighting equipment market leader with focus on surgical and examination lighting
+- **Target Markets**: Hospitals, outpatient clinics, veterinary facilities, and dental practices
+
+For additional research materials and market analysis, see the `/research` directory.
+
+---
+
 ## Version History
 
 ### v2.1.0 (Current)

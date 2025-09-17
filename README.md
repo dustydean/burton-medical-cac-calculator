@@ -117,6 +117,35 @@ npm run test:watch
 npm run serve
 ```
 
+## 📁 Project Structure
+
+```
+burton-medical-cac-calculator/
+├── cac-calculator.html              # Main CAC calculator with persona selector
+├── kpi-dashboard-demo.html          # KPI dashboard for sales demonstrations
+├── KPI-DASHBOARD-DOCUMENTATION.md   # Comprehensive dashboard documentation
+├── research/                        # Market research and company analysis
+│   ├── README.md                   # Research documentation guide
+│   └── burton-medical-research.pdf # Company background and market analysis
+├── verify-math.js                   # Mathematical verification script
+├── verify-dashboard-calculations.js # Dashboard calculation validator
+├── test-personas.html               # Persona testing interface
+└── tests/                          # Unit test suite
+    ├── setup.js                    # Jest and JSDOM configuration
+    ├── polyfills.js                # Node.js polyfills
+    └── unit/                       # Core calculation tests
+```
+
+## 📚 Documentation & Research
+
+### Key Documents
+- **[KPI Dashboard Documentation](./KPI-DASHBOARD-DOCUMENTATION.md)** - Complete guide to using the KPI dashboard
+- **[Research Directory](./research/)** - Market analysis and company research
+  - Burton Medical company analysis
+  - Healthcare lighting market trends
+  - Competitive positioning studies
+  - Customer segmentation research
+
 ## 🧪 Testing
 
 ### Test Coverage
