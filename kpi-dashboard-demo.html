@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burton Medical - KPI Dashboard Demo | Outpatient Clinic Performance</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            /* Light mode colors */
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --container-bg: rgba(255, 255, 255, 0.98);
+            --header-gradient-start: #3498db;
+            --header-gradient-end: #2c3e50;
+            --card-bg: #ffffff;
+            --kpi-summary-bg: #f8f9fa;
+            --table-header-bg: #f8f9fa;
+            --table-hover-bg: #f8f9fa;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-on-dark: #ffffff;
+            --border-color: #e0e0e0;
+            --border-light: #f0f0f0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.15);
+            --shadow-large: 0 20px 60px rgba(0,0,0,0.3);
+            --badge-bg: rgba(255,255,255,0.2);
+            --notice-gradient-start: #f39c12;
+            --notice-gradient-end: #e67e22;
+            --footer-bg: #2c3e50;
+
+            /* Chart colors */
+            --chart-primary: #3498db;
+            --chart-secondary: #2ecc71;
+            --chart-tertiary: #f39c12;
+            --chart-quaternary: #9b59b6;
+            --chart-danger: #e74c3c;
+            --chart-grid: rgba(0, 0, 0, 0.1);
+            --chart-text: #666;
+        }
+
+        [data-theme="dark"] {
+            /* Dark mode colors */
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --container-bg: rgba(30, 30, 45, 0.98);
+            --header-gradient-start: #1f2937;
+            --header-gradient-end: #111827;
+            --card-bg: #1f2937;
+            --kpi-summary-bg: #111827;
+            --table-header-bg: #374151;
+            --table-hover-bg: #374151;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-on-dark: #f3f4f6;
+            --border-color: #374151;
+            --border-light: #1f2937;
+            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.5);
+            --shadow-large: 0 20px 60px rgba(0,0,0,0.7);
+            --badge-bg: rgba(255,255,255,0.1);
+            --notice-gradient-start: #d97706;
+            --notice-gradient-end: #b45309;
+            --footer-bg: #111827;
+
+            /* Chart colors for dark mode */
+            --chart-primary: #60a5fa;
+            --chart-secondary: #34d399;
+            --chart-tertiary: #fbbf24;
+            --chart-quaternary: #a78bfa;
+            --chart-danger: #f87171;
+            --chart-grid: rgba(255, 255, 255, 0.1);
+            --chart-text: #9ca3af;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow-large);
+            overflow: hidden;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+            color: var(--text-on-dark);
+            padding: 30px;
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .header-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .persona-badge {
+            background: var(--badge-bg);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            background: var(--badge-bg);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: var(--text-on-dark);
+            padding: 8px 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(20deg);
+        }
+
+        .demo-notice {
+            background: linear-gradient(90deg, var(--notice-gradient-start), var(--notice-gradient-end));
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .kpi-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: var(--kpi-summary-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .kpi-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .kpi-change {
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .positive {
+            color: #2ecc71;
+        }
+
+        [data-theme="dark"] .positive {
+            color: #34d399;
+        }
+
+        .negative {
+            color: #e74c3c;
+        }
+
+        [data-theme="dark"] .negative {
+            color: #f87171;
+        }
+
+        .charts-container {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            background: var(--container-bg);
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chart-info {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: normal;
+        }
+
+        .metrics-table {
+            background: var(--card-bg);
+            padding: 25px;
+            margin: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .metrics-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .metrics-table th {
+            background: var(--table-header-bg);
+            padding: 12px;
+            text-align: left;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .metrics-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .metrics-table tbody tr:hover {
+            background: var(--table-hover-bg);
+        }
+
+        .footer {
+            background: var(--footer-bg);
+            color: var(--text-on-dark);
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        canvas {
+            max-height: 300px;
+        }
+
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            .kpi-summary {
+                grid-template-columns: 1fr 1fr;
+            }
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-title">
+                        <h1>Burton Medical Healthcare Lighting</h1>
+                        <div class="header-subtitle">Customer Acquisition & Performance Dashboard</div>
+                    </div>
+                </div>
+                <div class="header-controls">
+                    <div class="persona-badge">
+                        Outpatient Clinic Segment
+                    </div>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                        🌙
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-notice">
+            📊 DEMO MODE - Showing fabricated 12-month performance data based on Outpatient Clinic benchmarks
+        </div>
+
+        <div class="kpi-summary">
+            <div class="kpi-card">
+                <div class="kpi-label">Current CAC</div>
+                <div class="kpi-value">$985</div>
+                <div class="kpi-change positive">
+                    <span>↓</span> 12% from Q1
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Avg Contribution Margin</div>
+                <div class="kpi-value">46.7%</div>
+                <div class="kpi-change positive">
+                    <span>↑</span> 2.3% YoY
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Current ROAS</div>
+                <div class="kpi-value">3.5x</div>
+                <div class="kpi-change positive">
+                    <span>↑</span> 0.3x from Q1
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">LTV:CAC Ratio</div>
+                <div class="kpi-value">5.08x</div>
+                <div class="kpi-change positive">
+                    <span>↑</span> Healthy (>3x)
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Annual Revenue</div>
+                <div class="kpi-value">$4.69M</div>
+                <div class="kpi-change positive">
+                    <span>↑</span> On track
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Total Orders</div>
+                <div class="kpi-value">1,455</div>
+                <div class="kpi-change positive">
+                    <span>↑</span> 22% growth
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Lead → Order Conversion</div>
+                <div class="kpi-value" id="conversionRate">4.2%</div>
+                <div class="kpi-change positive">
+                    <span>↑</span> 0.5% from Q1
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Cost per Lead (CPL)</div>
+                <div class="kpi-value" id="cplValue">$41</div>
+                <div class="kpi-change positive">
+                    <span>↓</span> 15% from Q1
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-card">
+                <div class="chart-title">
+                    Customer Acquisition Cost (CAC) Trend
+                    <span class="chart-info">Monthly CAC vs Target</span>
+                </div>
+                <canvas id="cacChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">
+                    Contribution Margin Analysis
+                    <span class="chart-info">$ Value & %</span>
+                </div>
+                <canvas id="cmChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">
+                    Return on Ad Spend (ROAS)
+                    <span class="chart-info">Monthly Performance</span>
+                </div>
+                <canvas id="roasChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">
+                    LTV:CAC Ratio Trend
+                    <span class="chart-info">Unit Economics Health</span>
+                </div>
+                <canvas id="ltvCacChart"></canvas>
+            </div>
+
+            <div class="chart-card full-width">
+                <div class="chart-title">
+                    Revenue & Order Volume
+                    <span class="chart-info">Monthly Performance</span>
+                </div>
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Marketing Bridge Metrics Section -->
+        <div class="charts-container" style="background: var(--kpi-summary-bg); padding-top: 0;">
+            <div class="chart-title" style="grid-column: 1 / -1; padding: 20px 30px 0 30px; font-size: 1.5rem; border-bottom: 2px solid var(--border-color); margin-bottom: 20px;">
+                Marketing Bridge Metrics
+                <span class="chart-info" style="font-size: 1rem;">Connecting Marketing Inputs to Sales Outputs</span>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">
+                    Cost Per Lead (CPL) Trend
+                    <span class="chart-info">Monthly CPL Performance</span>
+                </div>
+                <canvas id="cplChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">
+                    Lead Conversion Rate Trend
+                    <span class="chart-info">Lead → Order Efficiency</span>
+                </div>
+                <canvas id="conversionChart"></canvas>
+            </div>
+
+            <div class="chart-card full-width">
+                <div class="chart-title">
+                    Lead Volume & Marketing Spend
+                    <span class="chart-info">Input Metrics Overview</span>
+                </div>
+                <canvas id="leadVolumeChart"></canvas>
+            </div>
+        </div>
+
+        <div class="metrics-table">
+            <div class="chart-title">
+                Monthly Performance Metrics
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Leads</th>
+                        <th>Orders</th>
+                        <th>Conv %</th>
+                        <th>Revenue</th>
+                        <th>CPL</th>
+                        <th>CAC</th>
+                        <th>CM (%)</th>
+                        <th>ROAS</th>
+                        <th>LTV:CAC</th>
+                    </tr>
+                </thead>
+                <tbody id="metricsTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Burton Medical Healthcare Lighting | Demo Dashboard | Powered by Strategic CAC Calculator</p>
+        </div>
+    </div>
+
+    <script>
+        // Dark mode toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        let isDarkMode = localStorage.getItem('dashboardTheme') === 'dark';
+
+        // Apply saved theme
+        if (isDarkMode) {
+            html.setAttribute('data-theme', 'dark');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            if (isDarkMode) {
+                html.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('dashboardTheme', 'dark');
+            } else {
+                html.removeAttribute('data-theme');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('dashboardTheme', 'light');
+            }
+
+            // Update chart colors
+            updateChartColors();
+        });
+
+        // Outpatient Clinic Owner base metrics
+        const personaMetrics = {
+            aov: 3500,
+            returnRate: 1.5,
+            cosPercent: 47.5,
+            fulfillmentCost: 200,
+            gaPercent: 11,
+            returningCustomers: 30,
+            repeatOrderRate: 1.5,
+            targetNetMargin: 16
+        };
+
+        // Monthly data with lead metrics
+        const monthlyData = {
+            months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            orders: [100, 105, 120, 120, 125, 115, 110, 110, 125, 135, 140, 150],
+            revenue: [350000, 367500, 420000, 420000, 437500, 402500, 385000, 385000, 437500, 472500, 490000, 525000],
+            // Lead data calculated from orders with varying conversion rates (3.5% to 4.5%)
+            leads: [],
+            conversionRates: [],
+            marketingSpend: [],
+            cpl: []
+        };
+
+        // Calculate lead data based on orders and conversion rates
+        function calculateLeadMetrics() {
+            const baseConversionRate = 0.04; // 4% base conversion rate
+
+            monthlyData.orders.forEach((orderCount, i) => {
+                // Add seasonal variation to conversion rate (better in Q4)
+                const seasonalFactor = 1 + (0.15 * Math.sin((i - 1) * Math.PI / 6));
+                const monthlyConversionRate = baseConversionRate * seasonalFactor * (0.9 + Math.random() * 0.2);
+
+                // Calculate leads from orders and conversion rate
+                const leadCount = Math.round(orderCount / monthlyConversionRate);
+
+                // Calculate marketing spend (based on CAC and lead conversion)
+                const monthlyMarketingSpend = metrics.cacValues ? metrics.cacValues[i] * orderCount : 985 * orderCount;
+
+                // Calculate CPL
+                const monthlyCPL = Math.round(monthlyMarketingSpend / leadCount);
+
+                monthlyData.leads.push(leadCount);
+                monthlyData.conversionRates.push(+(monthlyConversionRate * 100).toFixed(1));
+                monthlyData.marketingSpend.push(monthlyMarketingSpend);
+                monthlyData.cpl.push(monthlyCPL);
+            });
+
+            // Calculate totals and averages for headline cards
+            const totalOrders = monthlyData.orders.reduce((a, b) => a + b, 0);
+            const totalLeads = monthlyData.leads.reduce((a, b) => a + b, 0);
+            const avgConversionRate = (totalOrders / totalLeads * 100).toFixed(1);
+            const totalMarketingSpend = monthlyData.marketingSpend.reduce((a, b) => a + b, 0);
+            const avgCPL = Math.round(totalMarketingSpend / totalLeads);
+
+            // Update headline cards
+            document.getElementById('conversionRate').textContent = avgConversionRate + '%';
+            document.getElementById('cplValue').textContent = '$' + avgCPL;
+
+            return {
+                avgConversionRate,
+                avgCPL,
+                totalLeads
+            };
+        }
+
+        // Calculate derived metrics
+        function calculateMetrics() {
+            const aovPostTax = personaMetrics.aov * (1 - personaMetrics.returnRate/100);
+            const contributionMargin = aovPostTax * (1 - personaMetrics.cosPercent/100) - personaMetrics.fulfillmentCost;
+            const contributionMarginPercent = (contributionMargin / aovPostTax) * 100;
+            const operatingProfit = aovPostTax * (1 - personaMetrics.cosPercent/100 - personaMetrics.gaPercent/100) - personaMetrics.fulfillmentCost;
+            const avgOrders = 1 + (personaMetrics.returningCustomers/100 * personaMetrics.repeatOrderRate);
+            const cltv = aovPostTax * avgOrders;
+            const lifetimeProfit = operatingProfit * avgOrders;
+            const profitDrivenCAC = lifetimeProfit - (cltv * personaMetrics.targetNetMargin/100);
+
+            // Generate monthly variations with realistic fluctuations
+            const cacValues = [];
+            const cmValues = [];
+            const cmPercentValues = [];
+            const roasValues = [];
+            const ltvCacValues = [];
+
+            monthlyData.months.forEach((month, i) => {
+                // Add seasonal variations to CAC (higher in Q1, lower in Q4)
+                const seasonalFactor = 1 + (0.15 * Math.sin((i - 3) * Math.PI / 6));
+                const monthlyCAC = profitDrivenCAC * seasonalFactor * (0.9 + Math.random() * 0.2);
+                cacValues.push(Math.round(monthlyCAC));
+
+                // CM stays relatively stable with small variations
+                const monthlyCM = contributionMargin * (0.95 + Math.random() * 0.1);
+                cmValues.push(Math.round(monthlyCM));
+                cmPercentValues.push(+(contributionMarginPercent * (0.95 + Math.random() * 0.1)).toFixed(1));
+
+                // ROAS inversely related to CAC
+                const monthlyROAS = (aovPostTax / monthlyCAC);
+                roasValues.push(+monthlyROAS.toFixed(2));
+
+                // LTV:CAC ratio
+                const monthlyLtvCac = cltv / monthlyCAC;
+                ltvCacValues.push(+monthlyLtvCac.toFixed(2));
+            });
+
+            return {
+                cacValues,
+                cmValues,
+                cmPercentValues,
+                roasValues,
+                ltvCacValues,
+                targetCAC: Math.round(profitDrivenCAC),
+                targetROAS: 3.5
+            };
+        }
+
+        const metrics = calculateMetrics();
+
+        // Get chart colors based on theme
+        function getChartColors() {
+            const computedStyle = getComputedStyle(document.documentElement);
+            return {
+                primary: computedStyle.getPropertyValue('--chart-primary'),
+                secondary: computedStyle.getPropertyValue('--chart-secondary'),
+                tertiary: computedStyle.getPropertyValue('--chart-tertiary'),
+                quaternary: computedStyle.getPropertyValue('--chart-quaternary'),
+                danger: computedStyle.getPropertyValue('--chart-danger'),
+                grid: computedStyle.getPropertyValue('--chart-grid'),
+                text: computedStyle.getPropertyValue('--chart-text')
+            };
+        }
+
+        let chartColors = getChartColors();
+        let charts = {};
+
+        // Common chart options
+        function getCommonOptions() {
+            return {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            color: chartColors.text
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: chartColors.text
+                        },
+                        grid: {
+                            color: chartColors.grid
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: chartColors.text
+                        },
+                        grid: {
+                            color: chartColors.grid
+                        }
+                    }
+                }
+            };
+        }
+
+        // Initialize charts
+        function initCharts() {
+            // CAC Chart
+            const cacCtx = document.getElementById('cacChart').getContext('2d');
+            charts.cac = new Chart(cacCtx, {
+                type: 'line',
+                data: {
+                    labels: monthlyData.months,
+                    datasets: [{
+                        label: 'Actual CAC',
+                        data: metrics.cacValues,
+                        borderColor: chartColors.primary,
+                        backgroundColor: chartColors.primary + '20',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Target CAC',
+                        data: Array(12).fill(metrics.targetCAC),
+                        borderColor: chartColors.secondary,
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false
+                    }]
+                },
+                options: {
+                    ...getCommonOptions(),
+                    scales: {
+                        ...getCommonOptions().scales,
+                        y: {
+                            ...getCommonOptions().scales.y,
+                            beginAtZero: false,
+                            ticks: {
+                                ...getCommonOptions().scales.y.ticks,
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        ...getCommonOptions().plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + context.parsed.y;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Contribution Margin Chart
+            const cmCtx = document.getElementById('cmChart').getContext('2d');
+            charts.cm = new Chart(cmCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthlyData.months,
+                    datasets: [{
+                        label: 'CM ($)',
+                        data: metrics.cmValues,
+                        backgroundColor: chartColors.secondary,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'CM (%)',
+                        data: metrics.cmPercentValues,
+                        type: 'line',
+                        borderColor: chartColors.tertiary,
+                        backgroundColor: 'transparent',
+                        borderWidth: 3,
+                        yAxisID: 'y1',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    ...getCommonOptions(),
+                    scales: {
+                        x: getCommonOptions().scales.x,
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            ticks: {
+                                color: chartColors.text,
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            },
+                            grid: {
+                                color: chartColors.grid
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                color: chartColors.text,
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // ROAS Chart
+            const roasCtx = document.getElementById('roasChart').getContext('2d');
+            charts.roas = new Chart(roasCtx, {
+                type: 'line',
+                data: {
+                    labels: monthlyData.months,
+                    datasets: [{
+                        label: 'ROAS',
+                        data: metrics.roasValues,
+                        borderColor: chartColors.quaternary,
+                        backgroundColor: chartColors.quaternary + '20',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Target ROAS',
+                        data: Array(12).fill(metrics.targetROAS),
+                        borderColor: chartColors.danger,
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false
+                    }]
+                },
+                options: {
+                    ...getCommonOptions(),
+                    scales: {
+                        ...getCommonOptions().scales,
+                        y: {
+                            ...getCommonOptions().scales.y,
+                            beginAtZero: true,
+                            ticks: {
+                                ...getCommonOptions().scales.y.ticks,
+                                callback: function(value) {
+                                    return value + 'x';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        ...getCommonOptions().plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + 'x';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // LTV:CAC Chart
+            const ltvCacCtx = document.getElementById('ltvCacChart').getContext('2d');
+            charts.ltvCac = new Chart(ltvCacCtx, {
+                type: 'line',
+                data: {
+                    labels: monthlyData.months,
+                    datasets: [{
+                        label: 'LTV:CAC Ratio',
+                        data: metrics.ltvCacValues,
+                        borderColor: chartColors.primary,
+                        backgroundColor: chartColors.primary + '20',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Healthy Threshold',
+                        data: Array(12).fill(3),
+                        borderColor: chartColors.secondary,
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false
+                    }]
+                },
+                options: {
+                    ...getCommonOptions(),
+                    scales: {
+                        ...getCommonOptions().scales,
+                        y: {
+                            ...getCommonOptions().scales.y,
+                            beginAtZero: true,
+                            ticks: {
+                                ...getCommonOptions().scales.y.ticks,
+                                callback: function(value) {
+                                    return value + 'x';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        ...getCommonOptions().plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + 'x';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            charts.revenue = new Chart(revenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthlyData.months,
+                    datasets: [{
+                        label: 'Revenue',
+                        data: monthlyData.revenue,
+                        backgroundColor: chartColors.primary,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Orders',
+                        data: monthlyData.orders,
+                        type: 'line',
+                        borderColor: chartColors.secondary,
+                        backgroundColor: 'transparent',
+                        borderWidth: 3,
+                        yAxisID: 'y1',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    ...getCommonOptions(),
+                    scales: {
+                        x: getCommonOptions().scales.x,
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            ticks: {
+                                color: chartColors.text,
+                                callback: function(value) {
+                                    return '$' + (value/1000).toFixed(0) + 'k';
+                                }
+                            },
+                            grid: {
+                                color: chartColors.grid
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                color: chartColors.text,
+                                callback: function(value) {
+                                    return value + ' orders';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update chart colors when theme changes
+        function updateChartColors() {
+            chartColors = getChartColors();
+
+            // Destroy existing charts
+            Object.values(charts).forEach(chart => chart.destroy());
+
+            // Reinitialize charts with new colors
+            initCharts();
+
+            // Reinitialize marketing charts
+            const marketingChartElements = ['cplChart', 'conversionChart', 'leadVolumeChart'];
+            marketingChartElements.forEach(id => {
+                const chartInstance = Chart.getChart(id);
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+            });
+            initMarketingCharts();
+        }
+
+        // Initialize charts on page load
+        initCharts();
+
+        // Calculate lead metrics after main metrics are ready
+        const leadMetrics = calculateLeadMetrics();
+
+        // Initialize marketing bridge metric charts
+        initMarketingCharts();
+
+        function initMarketingCharts() {
+            // CPL Chart
+            const cplCtx = document.getElementById('cplChart').getContext('2d');
+            const cplChart = new Chart(cplCtx, {
+                type: 'line',
+                data: {
+                    labels: monthlyData.months,
+                    datasets: [{
+                        label: 'Cost Per Lead',
+                        data: monthlyData.cpl,
+                        borderColor: chartColors.tertiary,
+                        backgroundColor: chartColors.tertiary + '20',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Target CPL',
+                        data: Array(12).fill(41),
+                        borderColor: chartColors.secondary,
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false
+                    }]
+                },
+                options: {
+                    ...getCommonOptions(),
+                    scales: {
+                        ...getCommonOptions().scales,
+                        y: {
+                            ...getCommonOptions().scales.y,
+                            beginAtZero: true,
+                            ticks: {
+                                ...getCommonOptions().scales.y.ticks,
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        ...getCommonOptions().plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + context.parsed.y;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Conversion Rate Chart
+            const conversionCtx = document.getElementById('conversionChart').getContext('2d');
+            const conversionChart = new Chart(conversionCtx, {
+                type: 'line',
+                data: {
+                    labels: monthlyData.months,
+                    datasets: [{
+                        label: 'Conversion Rate',
+                        data: monthlyData.conversionRates,
+                        borderColor: chartColors.quaternary,
+                        backgroundColor: chartColors.quaternary + '20',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Target Rate',
+                        data: Array(12).fill(4.0),
+                        borderColor: chartColors.danger,
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false
+                    }]
+                },
+                options: {
+                    ...getCommonOptions(),
+                    scales: {
+                        ...getCommonOptions().scales,
+                        y: {
+                            ...getCommonOptions().scales.y,
+                            beginAtZero: true,
+                            max: 6,
+                            ticks: {
+                                ...getCommonOptions().scales.y.ticks,
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        ...getCommonOptions().plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Lead Volume Chart
+            const leadVolumeCtx = document.getElementById('leadVolumeChart').getContext('2d');
+            const leadVolumeChart = new Chart(leadVolumeCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthlyData.months,
+                    datasets: [{
+                        label: 'Lead Volume',
+                        data: monthlyData.leads,
+                        backgroundColor: chartColors.primary,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Marketing Spend',
+                        data: monthlyData.marketingSpend.map(spend => Math.round(spend / 1000)),
+                        type: 'line',
+                        borderColor: chartColors.tertiary,
+                        backgroundColor: 'transparent',
+                        borderWidth: 3,
+                        yAxisID: 'y1',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    ...getCommonOptions(),
+                    scales: {
+                        x: getCommonOptions().scales.x,
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            ticks: {
+                                color: chartColors.text,
+                                callback: function(value) {
+                                    return value + ' leads';
+                                }
+                            },
+                            grid: {
+                                color: chartColors.grid
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                color: chartColors.text,
+                                callback: function(value) {
+                                    return '$' + value + 'k';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Populate metrics table
+        const tableBody = document.getElementById('metricsTableBody');
+        monthlyData.months.forEach((month, i) => {
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td><strong>${month}</strong></td>
+                <td>${monthlyData.leads[i]}</td>
+                <td>${monthlyData.orders[i]}</td>
+                <td>${monthlyData.conversionRates[i]}%</td>
+                <td>$${(monthlyData.revenue[i]/1000).toFixed(0)}k</td>
+                <td>$${monthlyData.cpl[i]}</td>
+                <td>$${metrics.cacValues[i]}</td>
+                <td>${metrics.cmPercentValues[i]}%</td>
+                <td>${metrics.roasValues[i]}x</td>
+                <td>${metrics.ltvCacValues[i]}x</td>
+            `;
+        });
+    </script>
+</body>
+</html>
