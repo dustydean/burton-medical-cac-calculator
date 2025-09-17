@@ -167,12 +167,18 @@
         }
 
         .demo-notice {
-            background: linear-gradient(90deg, var(--notice-gradient-start), var(--notice-gradient-end));
-            color: white;
-            padding: 12px 20px;
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--text-secondary);
+            padding: 8px 15px;
             text-align: center;
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            font-weight: 400;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        [data-theme="dark"] .demo-notice {
+            background: rgba(243, 156, 18, 0.05);
         }
 
         .kpi-summary {
@@ -192,7 +198,6 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid var(--border-color);
             position: relative;
-            cursor: help;
         }
 
         /* Hero metrics are 20% larger */
@@ -622,6 +627,10 @@
     </style>
 </head>
 <body>
+    <div class="demo-notice">
+        📊 Demo Mode - Simulated 12-month performance metrics for Outpatient Clinic segment
+    </div>
+
     <div class="dashboard-container">
         <div class="dashboard-header">
             <div class="header-content">
@@ -640,10 +649,6 @@
                     </button>
                 </div>
             </div>
-        </div>
-
-        <div class="demo-notice">
-            📊 DEMO MODE - Showing fabricated 12-month performance data based on Outpatient Clinic benchmarks
         </div>
 
         <div class="kpi-summary">
@@ -1000,7 +1005,7 @@
             months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             orders: [100, 105, 120, 120, 125, 115, 110, 110, 125, 135, 140, 150],
             revenue: [350000, 367500, 420000, 420000, 437500, 402500, 385000, 385000, 437500, 472500, 490000, 525000],
-            // Lead data calculated from orders with varying conversion rates (3.5% to 4.5%)
+            // Lead data initialized as empty arrays
             leads: [],
             conversionRates: [],
             marketingSpend: [],
@@ -1020,7 +1025,9 @@
                 const leadCount = Math.round(orderCount / monthlyConversionRate);
 
                 // Calculate marketing spend (based on CAC and lead conversion)
-                const monthlyMarketingSpend = metrics.cacValues ? metrics.cacValues[i] * orderCount : 985 * orderCount;
+                const monthlyMarketingSpend = (metrics && metrics.cacValues && metrics.cacValues[i])
+                    ? metrics.cacValues[i] * orderCount
+                    : 985 * orderCount;
 
                 // Calculate CPL
                 const monthlyCPL = Math.round(monthlyMarketingSpend / leadCount);
@@ -1123,6 +1130,8 @@
                 console.log('Initializing charts...');
                 initCharts();
                 calculateLeadMetrics();
+                initMarketingCharts(); // Initialize marketing charts AFTER lead data is ready
+                populateMetricsTable(); // Populate table after lead metrics are calculated
                 console.log('Charts initialized:', Object.keys(charts).join(', '));
                 setupFullscreenFunctionality();
             } catch (error) {
@@ -1454,7 +1463,7 @@
                     chartInstance.destroy();
                 }
             });
-            initMarketingCharts();
+            initMarketingCharts(); // Re-initialize with new colors
         }
 
         function initMarketingCharts() {
@@ -1869,23 +1878,30 @@
             });
         }
 
-        // Populate metrics table
-        const tableBody = document.getElementById('metricsTableBody');
-        monthlyData.months.forEach((month, i) => {
-            const row = tableBody.insertRow();
-            row.innerHTML = `
-                <td><strong>${month}</strong></td>
-                <td>${monthlyData.leads[i]}</td>
-                <td>${monthlyData.orders[i]}</td>
-                <td>${monthlyData.conversionRates[i]}%</td>
-                <td>$${(monthlyData.revenue[i]/1000).toFixed(0)}k</td>
-                <td>$${monthlyData.cpl[i]}</td>
-                <td>$${metrics.cacValues[i]}</td>
-                <td>${metrics.cmPercentValues[i]}%</td>
-                <td>${metrics.roasValues[i]}x</td>
-                <td>${metrics.ltvCacValues[i]}x</td>
-            `;
-        });
+        // Populate metrics table (moved to a function to be called after lead metrics are ready)
+        function populateMetricsTable() {
+            const tableBody = document.getElementById('metricsTableBody');
+            if (!tableBody) return;
+
+            // Clear any existing rows
+            tableBody.innerHTML = '';
+
+            monthlyData.months.forEach((month, i) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td><strong>${month}</strong></td>
+                    <td>${monthlyData.leads && monthlyData.leads[i] ? monthlyData.leads[i] : 'N/A'}</td>
+                    <td>${monthlyData.orders[i]}</td>
+                    <td>${monthlyData.conversionRates && monthlyData.conversionRates[i] ? monthlyData.conversionRates[i] + '%' : 'N/A'}</td>
+                    <td>$${(monthlyData.revenue[i]/1000).toFixed(0)}k</td>
+                    <td>${monthlyData.cpl && monthlyData.cpl[i] ? '$' + monthlyData.cpl[i] : 'N/A'}</td>
+                    <td>$${metrics.cacValues[i]}</td>
+                    <td>${metrics.cmPercentValues[i]}%</td>
+                    <td>${metrics.roasValues[i]}x</td>
+                    <td>${metrics.ltvCacValues[i]}x</td>
+                `;
+            });
+        }
     </script>
 </body>
 </html>
