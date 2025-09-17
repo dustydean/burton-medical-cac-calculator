@@ -191,11 +191,273 @@
             box-shadow: var(--shadow);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid var(--border-color);
+            position: relative;
+            cursor: help;
+        }
+
+        /* Hero metrics are 20% larger */
+        .kpi-card.hero {
+            grid-column: span 1;
+            padding: 24px;
+        }
+
+        .kpi-card.hero .kpi-value {
+            font-size: 2.4rem;
+        }
+
+        .kpi-card.hero .kpi-label {
+            font-size: 0.95rem;
         }
 
         .kpi-card:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-hover);
+        }
+
+        /* Expandable info sections for charts */
+        .chart-toggle {
+            background: var(--chart-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+
+        .chart-toggle:hover {
+            transform: scale(1.1);
+            background: var(--chart-secondary);
+        }
+
+        .chart-toggle.expanded {
+            transform: rotate(45deg);
+        }
+
+        /* Fullscreen button for charts */
+        .fullscreen-toggle {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .fullscreen-toggle:hover {
+            background: var(--chart-primary);
+            color: white;
+            border-color: var(--chart-primary);
+        }
+
+        /* Fullscreen modal */
+        .fullscreen-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--container-bg);
+            z-index: 9999;
+            padding: 40px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .fullscreen-modal.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fullscreen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .fullscreen-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .fullscreen-close {
+            background: var(--chart-danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fullscreen-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .fullscreen-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .fullscreen-canvas-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 50vh;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .fullscreen-details {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            background: var(--kpi-summary-bg);
+            border-radius: 12px;
+            border-left: 4px solid var(--chart-primary);
+            margin-bottom: 20px;
+        }
+
+        .fullscreen-details h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .fullscreen-details p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .fullscreen-details ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .fullscreen-details li {
+            color: var(--text-secondary);
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .fullscreen-details strong {
+            color: var(--text-primary);
+        }
+
+        .chart-details {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--kpi-summary-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--chart-primary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .chart-details.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chart-details strong {
+            color: var(--text-primary);
+        }
+
+        .chart-details ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .chart-details li {
+            margin: 5px 0;
+        }
+
+        /* Health indicator badge */
+        .health-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .health-good {
+            background: rgba(46, 204, 113, 0.15);
+            color: #27ae60;
+        }
+
+        .health-warning {
+            background: rgba(241, 196, 15, 0.15);
+            color: #f39c12;
+        }
+
+        .health-concern {
+            background: rgba(231, 76, 60, 0.15);
+            color: #c0392b;
+        }
+
+        [data-theme="dark"] .health-good {
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+        }
+
+        [data-theme="dark"] .health-warning {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+
+        [data-theme="dark"] .health-concern {
+            background: rgba(248, 113, 113, 0.15);
+            color: #f87171;
         }
 
         .kpi-label {
@@ -266,12 +528,20 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .chart-title > span:first-child {
+            display: flex;
+            align-items: center;
+            flex: 1;
         }
 
         .chart-info {
             font-size: 0.85rem;
             color: var(--text-secondary);
             font-weight: normal;
+            margin-left: auto;
         }
 
         .metrics-table {
@@ -321,6 +591,22 @@
             max-height: 300px;
         }
 
+        /* Counter animation */
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .kpi-value {
+            animation: countUp 0.6s ease-out;
+        }
+
         @media (max-width: 768px) {
             .charts-container {
                 grid-template-columns: 1fr;
@@ -361,14 +647,16 @@
         </div>
 
         <div class="kpi-summary">
-            <div class="kpi-card">
+            <div class="kpi-card hero">
+                <div class="health-indicator health-good">Optimal</div>
                 <div class="kpi-label">Current CAC</div>
-                <div class="kpi-value">$985</div>
+                <div class="kpi-value" id="cacValue">$985</div>
                 <div class="kpi-change positive">
                     <span>↓</span> 12% from Q1
                 </div>
             </div>
             <div class="kpi-card">
+                <div class="health-indicator health-good">Strong</div>
                 <div class="kpi-label">Avg Contribution Margin</div>
                 <div class="kpi-value">46.7%</div>
                 <div class="kpi-change positive">
@@ -376,15 +664,17 @@
                 </div>
             </div>
             <div class="kpi-card">
+                <div class="health-indicator health-good">On Target</div>
                 <div class="kpi-label">Current ROAS</div>
                 <div class="kpi-value">3.5x</div>
                 <div class="kpi-change positive">
                     <span>↑</span> 0.3x from Q1
                 </div>
             </div>
-            <div class="kpi-card">
+            <div class="kpi-card hero">
+                <div class="health-indicator health-good">Excellent</div>
                 <div class="kpi-label">LTV:CAC Ratio</div>
-                <div class="kpi-value">5.08x</div>
+                <div class="kpi-value" id="ltvCacValue">5.08x</div>
                 <div class="kpi-change positive">
                     <span>↑</span> Healthy (>3x)
                 </div>
@@ -404,6 +694,7 @@
                 </div>
             </div>
             <div class="kpi-card">
+                <div class="health-indicator health-good">Above Avg</div>
                 <div class="kpi-label">Lead → Order Conversion</div>
                 <div class="kpi-value" id="conversionRate">4.2%</div>
                 <div class="kpi-change positive">
@@ -411,6 +702,7 @@
                 </div>
             </div>
             <div class="kpi-card">
+                <div class="health-indicator health-good">Efficient</div>
                 <div class="kpi-label">Cost per Lead (CPL)</div>
                 <div class="kpi-value" id="cplValue">$41</div>
                 <div class="kpi-change positive">
@@ -422,42 +714,119 @@
         <div class="charts-container">
             <div class="chart-card">
                 <div class="chart-title">
-                    Customer Acquisition Cost (CAC) Trend
+                    <span style="display: flex; align-items: center;">
+                        Customer Acquisition Cost (CAC) Trend
+                        <button class="chart-toggle" data-target="cac-details">+</button>
+                        <button class="fullscreen-toggle" data-chart="cacChart" data-title="Customer Acquisition Cost (CAC) Trend">⛶</button>
+                    </span>
                     <span class="chart-info">Monthly CAC vs Target</span>
                 </div>
                 <canvas id="cacChart"></canvas>
+                <div class="chart-details" id="cac-details">
+                    <strong>Understanding Customer Acquisition Cost (CAC):</strong>
+                    <p>CAC represents the maximum amount you can spend to acquire a customer while maintaining your target 16% net margin. This metric is critical for profitable growth.</p>
+                    <ul>
+                        <li><strong>Target CAC ($985):</strong> Based on your unit economics and 16% margin requirement</li>
+                        <li><strong>Seasonal Patterns:</strong> CAC typically rises in Q1 (budget resets) and falls in Q4 (year-end urgency)</li>
+                        <li><strong>Optimization Opportunity:</strong> Every $100 reduction in CAC = $145,500 additional annual profit at your volume</li>
+                    </ul>
+                    <p><strong>Key Insight:</strong> Your CAC has improved 12% since Q1, indicating better marketing efficiency and sales conversion.</p>
+                </div>
             </div>
 
             <div class="chart-card">
                 <div class="chart-title">
-                    Contribution Margin Analysis
+                    <span style="display: flex; align-items: center;">
+                        Contribution Margin Analysis
+                        <button class="chart-toggle" data-target="cm-details">+</button>
+                        <button class="fullscreen-toggle" data-chart="cmChart" data-title="Contribution Margin Analysis">⛶</button>
+                    </span>
                     <span class="chart-info">$ Value & %</span>
                 </div>
                 <canvas id="cmChart"></canvas>
+                <div class="chart-details" id="cm-details">
+                    <strong>What is Contribution Margin?</strong>
+                    <p>Contribution Margin is the revenue remaining after variable costs (COGS, fulfillment) but before marketing spend. It shows how much each sale contributes to covering fixed costs and profit.</p>
+                    <ul>
+                        <li><strong>Current Rate (46.7%):</strong> For every $3,500 order, $1,635 covers fixed costs and profit</li>
+                        <li><strong>Industry Benchmark:</strong> Healthcare equipment typically ranges 35-50%</li>
+                        <li><strong>Improvement Impact:</strong> Each 1% improvement = $51,000 additional annual margin</li>
+                    </ul>
+                    <p><strong>Strategic Value:</strong> Your strong contribution margin provides flexibility for competitive pricing or increased marketing investment.</p>
+                </div>
             </div>
 
             <div class="chart-card">
                 <div class="chart-title">
-                    Return on Ad Spend (ROAS)
+                    <span style="display: flex; align-items: center;">
+                        Return on Ad Spend (ROAS)
+                        <button class="chart-toggle" data-target="roas-details">+</button>
+                        <button class="fullscreen-toggle" data-chart="roasChart" data-title="Return on Ad Spend (ROAS)">⛶</button>
+                    </span>
                     <span class="chart-info">Monthly Performance</span>
                 </div>
                 <canvas id="roasChart"></canvas>
+                <div class="chart-details" id="roas-details">
+                    <strong>ROAS Explained:</strong>
+                    <p>Return on Ad Spend measures revenue generated for every marketing dollar spent. Your target of 3.5x means generating $3.50 in revenue per $1 of marketing spend.</p>
+                    <ul>
+                        <li><strong>Current Performance (3.5x):</strong> Exactly on target for sustainable profitability</li>
+                        <li><strong>Relationship to CAC:</strong> ROAS = AOV ÷ CAC (inverse relationship)</li>
+                        <li><strong>Optimization Path:</strong> Improving conversion rate by 0.5% increases ROAS to 3.8x</li>
+                    </ul>
+                    <p><strong>Action Item:</strong> Focus on channels consistently delivering >4x ROAS while testing new channels at 3x minimum.</p>
+                </div>
             </div>
 
             <div class="chart-card">
                 <div class="chart-title">
-                    LTV:CAC Ratio Trend
+                    <span style="display: flex; align-items: center;">
+                        LTV:CAC Ratio Trend
+                        <button class="chart-toggle" data-target="ltv-details">+</button>
+                        <button class="fullscreen-toggle" data-chart="ltvCacChart" data-title="LTV:CAC Ratio Trend">⛶</button>
+                    </span>
                     <span class="chart-info">Unit Economics Health</span>
                 </div>
                 <canvas id="ltvCacChart"></canvas>
+                <div class="chart-details" id="ltv-details">
+                    <strong>The Golden Metric - LTV:CAC Ratio:</strong>
+                    <p>This ratio compares Customer Lifetime Value to Customer Acquisition Cost, indicating the overall health of your unit economics.</p>
+                    <ul>
+                        <li><strong>Your Ratio (5.08x):</strong> Excellent - you generate $5.08 in value for every $1 spent acquiring customers</li>
+                        <li><strong>Industry Standards:</strong>
+                            <ul>
+                                <li>&lt; 3x: Unsustainable</li>
+                                <li>3-5x: Healthy</li>
+                                <li>&gt; 5x: Excellent (your current position)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Components:</strong> LTV ($4,999) ÷ CAC ($985) = 5.08x</li>
+                    </ul>
+                    <p><strong>Strategic Implication:</strong> Your excellent ratio suggests room for accelerated growth through increased marketing investment.</p>
+                </div>
             </div>
 
             <div class="chart-card full-width">
                 <div class="chart-title">
-                    Revenue & Order Volume
+                    <span style="display: flex; align-items: center;">
+                        Revenue & Order Volume
+                        <button class="chart-toggle" data-target="revenue-details">+</button>
+                        <button class="fullscreen-toggle" data-chart="revenueChart" data-title="Revenue & Order Volume">⛶</button>
+                    </span>
                     <span class="chart-info">Monthly Performance</span>
                 </div>
                 <canvas id="revenueChart"></canvas>
+                <div class="chart-details" id="revenue-details">
+                    <strong>Revenue & Growth Dynamics:</strong>
+                    <p>Tracking revenue alongside order volume reveals growth patterns and average order value consistency.</p>
+                    <ul>
+                        <li><strong>Annual Performance:</strong> $4.69M revenue from 1,455 orders</li>
+                        <li><strong>Growth Rate:</strong> 22% YoY order growth indicates strong market demand</li>
+                        <li><strong>AOV Consistency:</strong> Stable at $3,500 per order throughout the year</li>
+                        <li><strong>Seasonal Trends:</strong> Q4 typically strongest due to budget cycles</li>
+                    </ul>
+                    <p><strong>Opportunity:</strong> With your strong unit economics, increasing order volume by 20% would add $938K in revenue with maintained margins.</p>
+                </div>
             </div>
         </div>
 
@@ -470,26 +839,74 @@
 
             <div class="chart-card">
                 <div class="chart-title">
-                    Cost Per Lead (CPL) Trend
+                    <span style="display: flex; align-items: center;">
+                        Cost Per Lead (CPL) Trend
+                        <button class="chart-toggle" data-target="cpl-details">+</button>
+                        <button class="fullscreen-toggle" data-chart="cplChart" data-title="Cost Per Lead (CPL) Trend">⛶</button>
+                    </span>
                     <span class="chart-info">Monthly CPL Performance</span>
                 </div>
                 <canvas id="cplChart"></canvas>
+                <div class="chart-details" id="cpl-details">
+                    <strong>Cost Per Lead - The Top of Funnel Metric:</strong>
+                    <p>CPL measures the efficiency of your lead generation efforts. It's the first step in the CAC equation: CPL × (1 ÷ Conversion Rate) = CAC.</p>
+                    <ul>
+                        <li><strong>Current CPL ($41):</strong> 15% better than Q1, showing improved targeting</li>
+                        <li><strong>Relationship to CAC:</strong> At 4.2% conversion, your $41 CPL translates to $976 CAC</li>
+                        <li><strong>Channel Mix Impact:</strong> Different channels have varying CPLs - optimize for quality, not just cost</li>
+                    </ul>
+                    <p><strong>Pro Tip:</strong> Reducing CPL by $5 while maintaining quality saves $182,500 annually at your lead volume.</p>
+                </div>
             </div>
 
             <div class="chart-card">
                 <div class="chart-title">
-                    Lead Conversion Rate Trend
+                    <span style="display: flex; align-items: center;">
+                        Lead Conversion Rate Trend
+                        <button class="chart-toggle" data-target="conversion-details">+</button>
+                        <button class="fullscreen-toggle" data-chart="conversionChart" data-title="Lead Conversion Rate Trend">⛶</button>
+                    </span>
                     <span class="chart-info">Lead → Order Efficiency</span>
                 </div>
                 <canvas id="conversionChart"></canvas>
+                <div class="chart-details" id="conversion-details">
+                    <strong>Conversion Rate - The Efficiency Multiplier:</strong>
+                    <p>Lead-to-order conversion rate is the most powerful lever for reducing CAC. Small improvements create exponential impact.</p>
+                    <ul>
+                        <li><strong>Your Rate (4.2%):</strong> Significantly above 2-3% industry average for healthcare equipment</li>
+                        <li><strong>Impact Analysis:</strong>
+                            <ul>
+                                <li>0.5% improvement → $100 CAC reduction</li>
+                                <li>1% improvement → $186 CAC reduction</li>
+                            </ul>
+                        </li>
+                        <li><strong>Optimization Levers:</strong> Lead scoring, nurture sequences, sales enablement</li>
+                    </ul>
+                    <p><strong>Key Insight:</strong> Your above-average conversion suggests strong product-market fit and effective sales process.</p>
+                </div>
             </div>
 
             <div class="chart-card full-width">
                 <div class="chart-title">
-                    Lead Volume & Marketing Spend
+                    <span style="display: flex; align-items: center;">
+                        Lead Volume & Marketing Spend
+                        <button class="chart-toggle" data-target="volume-details">+</button>
+                        <button class="fullscreen-toggle" data-chart="leadVolumeChart" data-title="Lead Volume & Marketing Spend">⛶</button>
+                    </span>
                     <span class="chart-info">Input Metrics Overview</span>
                 </div>
                 <canvas id="leadVolumeChart"></canvas>
+                <div class="chart-details" id="volume-details">
+                    <strong>Marketing Investment & Lead Generation:</strong>
+                    <p>This chart shows the relationship between marketing spend and lead volume - the inputs that drive your sales engine.</p>
+                    <ul>
+                        <li><strong>Annual Totals:</strong> $1.43M spend generating ~35,000 leads</li>
+                        <li><strong>Efficiency Trend:</strong> CPL improving from $48 (Q1) to $41 (current)</li>
+                        <li><strong>Volume Dynamics:</strong> Lead volume scales predictably with spend</li>
+                        <li><strong>Quality vs Quantity:</strong> Focus on lead quality metrics, not just volume</li>
+                    </ul>
+                    <p><strong>Strategic Question:</strong> With your excellent LTV:CAC ratio, should you increase marketing spend to accelerate growth?</p>
+                </div>
             </div>
         </div>
 
@@ -519,6 +936,22 @@
 
         <div class="footer">
             <p>© 2025 Burton Medical Healthcare Lighting | Demo Dashboard | Powered by Strategic CAC Calculator</p>
+        </div>
+    </div>
+
+    <!-- Fullscreen Modal -->
+    <div class="fullscreen-modal" id="fullscreenModal">
+        <div class="fullscreen-header">
+            <h2 class="fullscreen-title" id="fullscreenTitle">Chart Title</h2>
+            <button class="fullscreen-close" id="fullscreenClose">×</button>
+        </div>
+        <div class="fullscreen-content">
+            <div class="fullscreen-canvas-container">
+                <canvas id="fullscreenCanvas"></canvas>
+            </div>
+            <div class="fullscreen-details" id="fullscreenDetails">
+                <!-- Details will be populated dynamically -->
+            </div>
         </div>
     </div>
 
@@ -683,6 +1116,19 @@
 
         let chartColors = getChartColors();
         let charts = {};
+
+        // Initialize all charts after page loads
+        window.addEventListener('load', () => {
+            try {
+                console.log('Initializing charts...');
+                initCharts();
+                calculateLeadMetrics();
+                console.log('Charts initialized:', Object.keys(charts).join(', '));
+                setupFullscreenFunctionality();
+            } catch (error) {
+                console.error('Error during initialization:', error);
+            }
+        });
 
         // Common chart options
         function getCommonOptions() {
@@ -1011,19 +1457,10 @@
             initMarketingCharts();
         }
 
-        // Initialize charts on page load
-        initCharts();
-
-        // Calculate lead metrics after main metrics are ready
-        const leadMetrics = calculateLeadMetrics();
-
-        // Initialize marketing bridge metric charts
-        initMarketingCharts();
-
         function initMarketingCharts() {
             // CPL Chart
             const cplCtx = document.getElementById('cplChart').getContext('2d');
-            const cplChart = new Chart(cplCtx, {
+            charts.cpl = new Chart(cplCtx, {
                 type: 'line',
                 data: {
                     labels: monthlyData.months,
@@ -1074,7 +1511,7 @@
 
             // Conversion Rate Chart
             const conversionCtx = document.getElementById('conversionChart').getContext('2d');
-            const conversionChart = new Chart(conversionCtx, {
+            charts.conversion = new Chart(conversionCtx, {
                 type: 'line',
                 data: {
                     labels: monthlyData.months,
@@ -1126,7 +1563,7 @@
 
             // Lead Volume Chart
             const leadVolumeCtx = document.getElementById('leadVolumeChart').getContext('2d');
-            const leadVolumeChart = new Chart(leadVolumeCtx, {
+            charts.leadVolume = new Chart(leadVolumeCtx, {
                 type: 'bar',
                 data: {
                     labels: monthlyData.months,
@@ -1178,6 +1615,255 @@
                                 }
                             }
                         }
+                    }
+                }
+            });
+        }
+
+        // Animate counter effect for KPI values
+        function animateValue(element, start, end, duration, suffix = '') {
+            const startTime = performance.now();
+            const endTime = startTime + duration;
+
+            function update() {
+                const now = performance.now();
+                const progress = Math.min((now - startTime) / duration, 1);
+
+                // Easing function for smooth animation
+                const easeOutQuad = progress => progress * (2 - progress);
+                const easedProgress = easeOutQuad(progress);
+
+                const currentValue = start + (end - start) * easedProgress;
+
+                // Format based on the type of value
+                if (suffix === '%') {
+                    element.textContent = currentValue.toFixed(1) + suffix;
+                } else if (suffix === 'x') {
+                    element.textContent = currentValue.toFixed(2) + suffix;
+                } else if (suffix === '$M') {
+                    element.textContent = '$' + currentValue.toFixed(2) + 'M';
+                } else if (suffix === '$') {
+                    element.textContent = '$' + Math.round(currentValue);
+                } else {
+                    element.textContent = Math.round(currentValue).toLocaleString();
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            update();
+        }
+
+        // Animate KPI values on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                // Animate CAC
+                const cacElement = document.getElementById('cacValue');
+                if (cacElement) animateValue(cacElement, 0, 985, 800, '$');
+
+                // Animate LTV:CAC
+                const ltvCacElement = document.getElementById('ltvCacValue');
+                if (ltvCacElement) animateValue(ltvCacElement, 0, 5.08, 800, 'x');
+
+                // Other animated values are already set via calculateLeadMetrics
+            }, 100);
+
+            // Add toggle functionality for chart details
+            const toggleButtons = document.querySelectorAll('.chart-toggle');
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        targetElement.classList.toggle('show');
+                        button.classList.toggle('expanded');
+                        button.textContent = button.classList.contains('expanded') ? '−' : '+';
+                    }
+                });
+            });
+
+        });
+
+        // Setup fullscreen functionality for charts
+        let fullscreenChart = null; // Move to global scope for the function
+
+        function setupFullscreenFunctionality() {
+            const fullscreenButtons = document.querySelectorAll('.fullscreen-toggle');
+            const fullscreenModal = document.getElementById('fullscreenModal');
+            const fullscreenTitle = document.getElementById('fullscreenTitle');
+            const fullscreenClose = document.getElementById('fullscreenClose');
+            const fullscreenCanvas = document.getElementById('fullscreenCanvas');
+
+            console.log('Setting up fullscreen. Charts available:', Object.keys(charts).join(', '), 'Total:', Object.keys(charts).length); // Debug
+
+            fullscreenButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const chartId = button.getAttribute('data-chart');
+                    const title = button.getAttribute('data-title');
+                    const chartKey = chartId.replace('Chart', '');
+                    const originalChart = charts[chartKey];
+
+                    console.log('Fullscreen clicked:', chartId, chartKey, originalChart); // Debug
+
+                    if (originalChart) {
+                        fullscreenTitle.textContent = title;
+                        fullscreenModal.classList.add('active');
+
+                        // Find and display the corresponding details
+                        const detailsMap = {
+                            'cac': 'cac-details',
+                            'cm': 'cm-details',
+                            'roas': 'roas-details',
+                            'ltvCac': 'ltv-details',
+                            'revenue': 'revenue-details',
+                            'cpl': 'cpl-details',
+                            'conversion': 'conversion-details',
+                            'leadVolume': 'volume-details'
+                        };
+
+                        const detailsId = detailsMap[chartKey];
+                        const detailsElement = document.getElementById(detailsId);
+                        const fullscreenDetails = document.getElementById('fullscreenDetails');
+
+                        if (detailsElement && fullscreenDetails) {
+                            // Clone the content and display it
+                            fullscreenDetails.innerHTML = detailsElement.innerHTML;
+                            fullscreenDetails.style.display = 'block';
+                        } else {
+                            fullscreenDetails.style.display = 'none';
+                        }
+
+                        // Destroy existing fullscreen chart if any
+                        if (fullscreenChart) {
+                            fullscreenChart.destroy();
+                        }
+
+                        // Get chart type
+                        const chartType = originalChart.config.type;
+
+                        // Create a simple data copy
+                        const simpleDatasets = [];
+                        originalChart.data.datasets.forEach(dataset => {
+                            const newDataset = {
+                                label: dataset.label || '',
+                                data: [...dataset.data]
+                            };
+
+                            // Only add properties if they exist and are simple values
+                            if (dataset.backgroundColor) newDataset.backgroundColor = dataset.backgroundColor;
+                            if (dataset.borderColor) newDataset.borderColor = dataset.borderColor;
+                            if (typeof dataset.borderWidth === 'number') newDataset.borderWidth = dataset.borderWidth;
+                            if (dataset.fill !== undefined) newDataset.fill = dataset.fill;
+                            if (typeof dataset.tension === 'number') newDataset.tension = dataset.tension;
+
+                            // Handle borderDash arrays
+                            if (Array.isArray(dataset.borderDash)) {
+                                newDataset.borderDash = [...dataset.borderDash];
+                            }
+
+                            // Handle mixed charts (bar + line)
+                            if (dataset.type && dataset.type !== chartType) {
+                                newDataset.type = dataset.type;
+                            }
+
+                            // Handle yAxisID for mixed charts
+                            if (dataset.yAxisID && typeof dataset.yAxisID === 'string') {
+                                newDataset.yAxisID = dataset.yAxisID;
+                            }
+
+                            simpleDatasets.push(newDataset);
+                        });
+
+                        // Create new fullscreen chart with minimal config
+                        const ctx = fullscreenCanvas.getContext('2d');
+
+                        try {
+                            console.log('Creating fullscreen chart of type:', chartType);
+                            console.log('Datasets:', simpleDatasets);
+
+                            // Check if any dataset needs a second y-axis
+                            const needsSecondYAxis = simpleDatasets.some(d => d.yAxisID === 'y1');
+
+                            const chartConfig = {
+                                type: chartType,
+                                data: {
+                                    labels: [...originalChart.data.labels],
+                                    datasets: simpleDatasets
+                                },
+                                options: {
+                                    maintainAspectRatio: false,
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'bottom'
+                                        }
+                                    }
+                                }
+                            };
+
+                            // Add scales only if needed
+                            if (needsSecondYAxis) {
+                                chartConfig.options.scales = {
+                                    y: {
+                                        type: 'linear',
+                                        display: true,
+                                        position: 'left'
+                                    },
+                                    y1: {
+                                        type: 'linear',
+                                        display: true,
+                                        position: 'right',
+                                        grid: {
+                                            drawOnChartArea: false
+                                        }
+                                    }
+                                };
+                            }
+
+                            fullscreenChart = new Chart(ctx, chartConfig);
+
+                            console.log('Fullscreen chart created successfully');
+                        } catch (error) {
+                            console.error('Error creating fullscreen chart:', error);
+                            console.error('Chart type:', chartType);
+                            console.error('Datasets:', simpleDatasets);
+                        }
+                    } else {
+                        console.error('Chart not found:', chartKey, 'Available charts:', Object.keys(charts));
+                    }
+                });
+            });
+
+            // Close fullscreen modal
+            fullscreenClose.addEventListener('click', () => {
+                fullscreenModal.classList.remove('active');
+                if (fullscreenChart) {
+                    fullscreenChart.destroy();
+                    fullscreenChart = null;
+                }
+                // Clear the details
+                const fullscreenDetails = document.getElementById('fullscreenDetails');
+                if (fullscreenDetails) {
+                    fullscreenDetails.innerHTML = '';
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && fullscreenModal.classList.contains('active')) {
+                    fullscreenModal.classList.remove('active');
+                    if (fullscreenChart) {
+                        fullscreenChart.destroy();
+                        fullscreenChart = null;
+                    }
+                    // Clear the details
+                    const fullscreenDetails = document.getElementById('fullscreenDetails');
+                    if (fullscreenDetails) {
+                        fullscreenDetails.innerHTML = '';
                     }
                 }
             });
