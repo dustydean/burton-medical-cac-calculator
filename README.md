@@ -1,31 +1,57 @@
-# Strategic CAC Calculator
+# Burton Medical - Healthcare Lighting CAC Calculator
 
-A sophisticated web-based tool for calculating Customer Acquisition Cost (CAC), Customer Lifetime Value (CLTV), and optimizing marketing spend. Originally built for VersaTube, this calculator helps businesses determine their optimal marketing budgets and customer acquisition strategies.
+A specialized Customer Acquisition Cost (CAC) calculator designed for Burton Medical's healthcare lighting solutions. This tool provides industry-specific benchmarks for different healthcare segments, helping optimize marketing spend and sales strategies for medical lighting equipment.
 
 ## 🎯 Overview
 
-The Strategic CAC Calculator is a comprehensive financial tool that helps businesses:
-- **Calculate Customer Acquisition Cost (CAC)** with profit targets
-- **Determine Customer Lifetime Value (CLTV)** with repeat purchase modeling
-- **Optimize marketing spend** with target ROAS and CPL calculations
-- **Analyze unit economics** with waterfall visualization
-- **Plan growth strategies** with scenario modeling
+The Burton Medical CAC Calculator is a customized financial tool that helps healthcare lighting sales teams:
+- **Calculate segment-specific CAC** with healthcare industry benchmarks
+- **Analyze customer lifetime value** based on equipment replacement cycles
+- **Optimize marketing spend** across different healthcare verticals
+- **Plan channel strategies** for hospital, clinic, veterinary, and dental markets
+- **Model profitability** with medical equipment-specific cost structures
 
-This repository includes both the calculator application and a comprehensive test suite ensuring reliability and accuracy.
+## 🏥 Healthcare Personas
+
+The calculator includes pre-configured benchmarks for four key healthcare segments:
+
+### Hospital OR Administrator
+- **Profile**: Regional/community hospital surgical suite decision-makers
+- **AOV**: $7,000-10,000+ (multi-head surgical lights, ceiling mounts)
+- **Target Net Margin**: 19%
+- **Replacement Cycle**: 5-7 years
+
+### Outpatient Clinic Owner
+- **Profile**: Private practice or specialty clinic operators
+- **AOV**: $2,000-5,000 (exam/procedure lights)
+- **Target Net Margin**: 16%
+- **Returning Rate**: 25-35%
+
+### Veterinary Surgeon
+- **Profile**: Veterinary hospital or surgical clinic operators
+- **AOV**: $1,500-3,500 (procedure lights, Outpatient models)
+- **Target Net Margin**: 14%
+- **Returning Rate**: 30-40%
+
+### Dental/Oral Surgery Director
+- **Profile**: Dental or oral surgery clinic leadership
+- **AOV**: $3,000-6,000 (precision procedure lights)
+- **Target Net Margin**: 17%
+- **Returning Rate**: 25-30%
 
 ## 🚀 Features
 
 ### Core Calculations
-- **Customer Acquisition Cost (CAC)** - Profit-driven and break-even calculations
-- **Customer Lifetime Value (CLTV)** - Including repeat purchase modeling
-- **Return on Ad Spend (ROAS)** - Target efficiency metrics
-- **Cost Per Lead (CPL)** - Lead funnel optimization
-- **LTV:CAC Ratios** - Unit economics health indicators
+- **Healthcare-Specific CAC** - Incorporates installation and compliance costs
+- **Equipment Lifecycle Value** - Models based on typical replacement cycles
+- **Channel Profitability** - Compare direct sales vs. distributor margins
+- **Return on Investment** - Trade show and conference ROI analysis
+- **Commission Structures** - Align sales compensation with CAC targets
 
 ### Interactive Features
-- **Multi-tab Interface** - Organized data entry (Business Basics, Customer Metrics, Financial Targets)
-- **Real-time Calculations** - Instant updates as you change inputs
-- **Expandable Details** - See formulas and calculation breakdowns
+- **Persona Selector** - Quick-load industry benchmarks
+- **Real-time Calculations** - Instant updates as you adjust inputs
+- **Multi-tab Interface** - Organized data entry by category
 - **Waterfall Visualization** - Visual breakdown of unit economics
 - **Dark/Light Themes** - Customizable appearance
 - **Presentation Mode** - Clean view for client presentations
@@ -36,14 +62,8 @@ This repository includes both the calculator application and a comprehensive tes
 ### Application Structure
 - **Single Page Application** - Pure HTML/CSS/JavaScript
 - **Responsive Design** - Works on desktop and mobile
-- **Progressive Enhancement** - Functional without JavaScript frameworks
+- **Healthcare-Optimized** - Pre-configured for medical equipment sales
 - **Accessibility Compliant** - Screen reader and keyboard navigation support
-
-### Test Suite
-
-This repository includes a focused test suite ensuring core calculation reliability:
-
-- **Unit Tests** (`tests/unit/`) - Comprehensive testing of all mathematical calculation functions
 
 ## 🚀 Getting Started
 
@@ -51,36 +71,38 @@ This repository includes a focused test suite ensuring core calculation reliabil
 
 1. **Open the Calculator**
    - Open `cac-calculator.html` in any modern web browser
-   - Or visit the live demo: [Strategic CAC Calculator](https://dustydean.github.io/cac-calculator)
+   - Or visit: [Burton Medical CAC Calculator](https://dustydean.github.io/burton-medical-cac-calculator)
 
-2. **Enter Your Business Data**
-   - **Business Basics**: AOV, tax rate, return rate, cost of sales
-   - **Customer Metrics**: Retention rates, fulfillment costs
-   - **Financial Targets**: G&A costs, target profit margins
+2. **Select Your Persona**
+   - Choose from Hospital OR, Outpatient Clinic, Veterinary, or Dental personas
+   - The calculator will automatically load industry-specific benchmarks
 
-3. **View Results**
-   - See calculated CAC, CLTV, ROAS targets
-   - Explore calculation details by clicking "+" buttons
-   - Use the waterfall chart to understand unit economics
+3. **Customize Values** (Optional)
+   - Fine-tune the pre-loaded values based on your specific market
+   - Adjust for regional differences or product variations
+
+4. **View Results**
+   - See calculated CAC, CLTV, and profitability metrics
+   - Explore calculation details for transparency
+   - Use insights for marketing and sales planning
 
 ### For Developers
 
 #### Prerequisites
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 #### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/dustydean/cac-calculator.git
-cd cac-calculator
+git clone https://github.com/dustydean/burton-medical-cac-calculator.git
+cd burton-medical-cac-calculator
 
 # Install test dependencies
 npm install
 ```
 
 #### Running Tests
-
 ```bash
 # Run unit tests
 npm test
@@ -98,55 +120,45 @@ npm run serve
 ## 🧪 Testing
 
 ### Test Coverage
-
-The unit test suite provides comprehensive coverage of all core mathematical functions:
-
-- ✅ **AOV Calculations** - Post-tax and returns calculations with various rates
-- ✅ **Margin Calculations** - Gross and contribution margins with edge cases  
-- ✅ **Profit Calculations** - Operating profit per order with cost scenarios
-- ✅ **Customer Metrics** - Lifetime value and profit with repeat purchase modeling
-- ✅ **CAC Calculations** - Profit-driven and break-even CAC with target margins
-- ✅ **ROAS & Ratios** - Target ROAS and LTV:CAC ratio calculations
-- ✅ **CPL Calculations** - Cost per lead with conversion rate modeling
-- ✅ **Edge Cases** - Division by zero, negative values, and boundary conditions
-
-**Current Status**: 29 unit tests with 100% pass rate
+The unit test suite provides comprehensive coverage of all core mathematical functions, ensuring accuracy for healthcare-specific calculations.
 
 ### Test Structure
-
 ```
 tests/
 ├── setup.js                    # Jest and JSDOM configuration
-├── polyfills.js                # Node.js polyfills for browser APIs  
+├── polyfills.js                # Node.js polyfills for browser APIs
 ├── fixtures/
-│   └── testData.js             # Test scenarios and expected results
+│   └── testData.js             # Healthcare-specific test scenarios
 ├── utils/
-│   └── calculatorHelpers.js    # Test helper functions and utilities
+│   └── calculatorHelpers.js    # Test helper functions
 └── unit/
     └── calculations.test.js    # Core calculation function tests
 ```
 
-### Running Tests
+## 📊 Use Cases
 
-```bash
-# Run all tests
-npm test
+### Sales Team Planning
+- Determine sustainable commission structures by healthcare segment
+- Identify highest-ROI customer segments for Burton Medical products
+- Plan territory allocation based on segment profitability
 
-# Run with coverage report  
-npm run test:coverage
+### Marketing Strategy
+- Evaluate trade show investments against segment-specific CAC benchmarks
+- Compare digital marketing vs. traditional healthcare marketing channels
+- Optimize marketing mix for different healthcare verticals
 
-# Watch mode for development
-npm run test:watch
-```
+### Product Development
+- Assess market viability for new lighting product lines
+- Understand price sensitivity across healthcare segments
+- Plan product features based on segment requirements and margins
 
 ## 🤝 Contributing
 
 When contributing to the calculator:
-
-1. **Add Tests** - Include unit tests for any new calculations
-2. **Update Test Data** - Modify expected results when changing logic  
-3. **Test Edge Cases** - Ensure proper handling of boundary conditions
-4. **Validate Accuracy** - Verify mathematical correctness with manual calculations
+1. **Maintain Healthcare Focus** - Keep enhancements relevant to medical equipment sales
+2. **Add Tests** - Include unit tests for any new calculations
+3. **Document Personas** - Update persona data with market research
+4. **Validate Benchmarks** - Ensure industry data is current and accurate
 
 ## 📄 License
 
@@ -154,5 +166,6 @@ MIT License. See LICENSE file for details.
 
 ---
 
-**Calculator Version**: 1.0.0  
-**Last Updated**: 2024
+**Calculator Version**: 2.0.0 - Burton Medical Edition
+**Last Updated**: 2025
+**Customized for**: Burton Medical Healthcare Lighting Solutions

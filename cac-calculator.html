@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Strategic CAC Calculator</title>
+	<title>Burton Medical - Healthcare Lighting CAC Calculator</title>
 	<style>
 		:root {
 			/* Light theme variables */
@@ -97,6 +97,124 @@
 			margin: 0;
 			font-size: 1.5rem;
 			font-weight: 600;
+		}
+
+		/* Persona Selector Styles */
+		.persona-selector {
+			background-color: var(--bg-secondary);
+			border-radius: 8px;
+			padding: 25px;
+			margin: 20px;
+			box-shadow: 0 2px 4px var(--shadow-color);
+		}
+
+		.persona-selector h2 {
+			color: var(--text-primary);
+			margin-bottom: 10px;
+			font-size: 1.5rem;
+			font-weight: 600;
+		}
+
+		.persona-cards {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+			gap: 20px;
+			margin-top: 20px;
+		}
+
+		.persona-card {
+			background-color: var(--bg-card);
+			border: 2px solid var(--border-color);
+			border-radius: 10px;
+			padding: 20px;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.persona-card:hover {
+			border-color: var(--accent-primary);
+			box-shadow: 0 6px 12px var(--shadow-color);
+			transform: translateY(-3px);
+		}
+
+		.persona-card.selected {
+			border-color: var(--accent-secondary);
+			background-color: var(--key-metric-bg);
+			box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+		}
+
+		.persona-card.selected::before {
+			content: '✓';
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			background: var(--accent-secondary);
+			color: white;
+			width: 24px;
+			height: 24px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 14px;
+			font-weight: bold;
+		}
+
+		.persona-card h3 {
+			margin: 0 0 12px 0;
+			color: var(--accent-primary);
+			font-size: 1.2rem;
+			font-weight: 600;
+		}
+
+		.persona-card p {
+			margin: 0 0 15px 0;
+			color: var(--text-secondary);
+			font-size: 0.95rem;
+			line-height: 1.5;
+			min-height: 44px;
+		}
+
+		.persona-metrics {
+			margin-top: 15px;
+			padding-top: 15px;
+			border-top: 2px solid var(--border-color);
+		}
+
+		.metrics-title {
+			font-size: 0.85rem;
+			text-transform: uppercase;
+			color: var(--text-light);
+			letter-spacing: 0.5px;
+			margin-bottom: 10px;
+			font-weight: 600;
+		}
+
+		.metrics-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 8px 15px;
+		}
+
+		.persona-metrics .metric {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		.persona-metrics .metric-label {
+			font-size: 0.75rem;
+			color: var(--text-light);
+			text-transform: uppercase;
+			letter-spacing: 0.3px;
+		}
+
+		.metric-value {
+			font-size: 0.95rem;
+			font-weight: 600;
+			color: var(--text-primary);
 		}
 
 		.header-actions {
@@ -771,7 +889,7 @@
 <body>
 	<div class="container">
 		<header class="header">
-			<h1>Strategic CAC Calculator</h1>
+			<h1>Burton Medical - Healthcare Lighting CAC Calculator</h1>
 			<div class="header-actions">
 				<button id="presentationModeBtn" class="button presentation-mode">
 					Presentation Mode
@@ -781,6 +899,33 @@
 				</button>
 			</div>
 		</header>
+
+		<!-- Persona Selector Section -->
+		<div class="persona-selector">
+			<h2>Select Your Customer Persona</h2>
+			<p style="color: var(--text-secondary); margin-bottom: 15px;">Choose a persona to pre-populate the calculator with industry-specific benchmarks for healthcare lighting solutions.</p>
+			<div class="persona-cards">
+				<div class="persona-card" data-persona="hospital-or">
+					<h3>Hospital OR Administrator</h3>
+					<p>Regional/community hospital surgical suite decision-maker. Prioritizes compliance, surgeon satisfaction, and equipment reliability.</p>
+				</div>
+
+				<div class="persona-card" data-persona="outpatient-clinic">
+					<h3>Outpatient Clinic Owner</h3>
+					<p>Private practice or specialty clinic (dermatology, OB/GYN, plastics). Balances clinical quality with financial sustainability.</p>
+				</div>
+
+				<div class="persona-card" data-persona="veterinary">
+					<h3>Veterinary Surgeon</h3>
+					<p>Veterinary hospital or surgical clinic. Cost-sensitive but wants human-grade quality for animal procedures.</p>
+				</div>
+
+				<div class="persona-card" data-persona="dental">
+					<h3>Dental/Oral Surgery Director</h3>
+					<p>Dental or oral surgery clinic with multiple operatories. Values precision lighting for small field procedures.</p>
+				</div>
+			</div>
+		</div>
 
 		<div class="top-panel" id="topPanel">
 			<div class="tabs">
@@ -1196,6 +1341,91 @@
 			let isDarkMode = false;
 			let isPresentationMode = false;
 			let currentProfitDrivenCAC = 0;
+
+			// Burton Medical Persona Data
+			const personaData = {
+				'hospital-or': {
+					name: 'Hospital OR Administrator',
+					aov: 8500,
+					returnRate: 1,
+					cosPercent: 42.5,
+					fulfillmentCost: 400,
+					gaPercent: 8,
+					returningCustomers: 20,
+					repeatOrderRate: 1.25,
+					targetNetMargin: 19,
+					taxRate: 0
+				},
+				'outpatient-clinic': {
+					name: 'Outpatient Clinic Owner',
+					aov: 3500,
+					returnRate: 1.5,
+					cosPercent: 47.5,
+					fulfillmentCost: 200,
+					gaPercent: 11,
+					returningCustomers: 30,
+					repeatOrderRate: 1.5,
+					targetNetMargin: 16,
+					taxRate: 0
+				},
+				'veterinary': {
+					name: 'Veterinary Surgeon',
+					aov: 2500,
+					returnRate: 1,
+					cosPercent: 50,
+					fulfillmentCost: 175,
+					gaPercent: 12,
+					returningCustomers: 35,
+					repeatOrderRate: 1.75,
+					targetNetMargin: 14,
+					taxRate: 0
+				},
+				'dental': {
+					name: 'Dental/Oral Surgery Director',
+					aov: 4500,
+					returnRate: 0.5,
+					cosPercent: 46.5,
+					fulfillmentCost: 225,
+					gaPercent: 10,
+					returningCustomers: 27.5,
+					repeatOrderRate: 1.5,
+					targetNetMargin: 17,
+					taxRate: 0
+				}
+			};
+
+			// Persona Selection Handling
+			const personaCards = document.querySelectorAll('.persona-card');
+			personaCards.forEach(card => {
+				card.addEventListener('click', function() {
+					// Remove selected class from all cards
+					personaCards.forEach(c => c.classList.remove('selected'));
+					// Add selected class to clicked card
+					this.classList.add('selected');
+
+					// Load persona data
+					const personaKey = this.getAttribute('data-persona');
+					if (personaData[personaKey]) {
+						loadPersonaData(personaData[personaKey]);
+						showNotification(`Loaded ${personaData[personaKey].name} benchmarks`, 'success');
+					}
+				});
+			});
+
+			function loadPersonaData(data) {
+				document.getElementById('aov').value = data.aov;
+				document.getElementById('taxRate').value = data.taxRate;
+				document.getElementById('returnRate').value = data.returnRate;
+				document.getElementById('cosPercent').value = data.cosPercent;
+				document.getElementById('returningCustomers').value = data.returningCustomers;
+				document.getElementById('repeatOrderRate').value = data.repeatOrderRate;
+				document.getElementById('fulfillmentCost').value = data.fulfillmentCost;
+				document.getElementById('gaPercent').value = data.gaPercent;
+				document.getElementById('targetNetMargin').value = data.targetNetMargin;
+
+				// Auto-calculate after loading persona
+				calculateResults();
+			}
 
 			// Event Listeners
 			calculateBtn.addEventListener('click', function(e) { e.preventDefault(); calculateResults(); });
